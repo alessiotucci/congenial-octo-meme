@@ -3,7 +3,9 @@ Web app for an University project, course name: "TECNOLOGIE WEB: APPROCCI AVANZA
 
 ## Start of the development
 
-With the use of AI I have created a small roadmap, I will try to follow and  use online resources as youtube videos
+With the use of AI I have created a small roadmap, I will try to follow and  use online resources as youtube videos, I will use the table to store all the videos and resources.
+I have found as well a nice Database design that I can copy and modify, since the design of the database is the most critical part of this project.
+I will use MySQL and Php.
 
 | video | topics | implementations |
 |-------|--------|-----------------|
