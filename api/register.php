@@ -1,3 +1,13 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*   Host: DESKTOP-TQURMND                                                    */
+/*   File: register.php                                                       */
+/*   Created: 2026/01/20 19:29:10 | By: marvin <marvin@42.fr>                 */
+/*   Updated: 2026/01/20 19:29:13                                             */
+/*   OS: WindowsNT 2 x86 | CPU: c:\programdata\chocolatey\lib\unx             */
+/*                                                                            */
+/* ************************************************************************** */
+
 <?php
 //1) headers
 header('Access-Control-Allow-Origin: *');

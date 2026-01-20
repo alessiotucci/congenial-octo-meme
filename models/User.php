@@ -1,3 +1,12 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*   Host: DESKTOP-TQURMND                                                    */
+/*   File: User.php                                                           */
+/*   Created: 2026/01/20 19:27:29 | By: marvin <marvin@42.fr>                 */
+/*   Updated: 2026/01/20 19:27:41                                             */
+/*   OS: WindowsNT 2 x86 | CPU: c:\programdata\chocolatey\lib\unx             */
+/*                                                                            */
+/* ************************************************************************** */
 <?php
 // class for the User
 class User
