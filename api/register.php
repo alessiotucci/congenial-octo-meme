@@ -26,7 +26,7 @@ if (!empty($data->email) && !empty($data->password) && !empty($data->role))
 		if ($user->emailExists())
 		{
 			http_response_code(400);
-			echo json_decode(array("message" => "Email already in use!."));
+			echo json_decode("Email already in use!.");
 		}
 		else
 		{
@@ -38,7 +38,7 @@ if (!empty($data->email) && !empty($data->password) && !empty($data->role))
 			else
 			{
 			http_response_code(503);
-			echo json_decode(array("message" => "Unable to create user."));
+			echo json_decode("Unable to create user.");
 			}
 		}
 
