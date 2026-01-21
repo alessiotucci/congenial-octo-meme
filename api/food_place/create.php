@@ -1,3 +1,4 @@
+<?php
 /* ************************************************************************** */
 /*                                                                            */
 /*   Host: DESKTOP-TQURMND                                                    */
@@ -9,7 +10,6 @@
 /* ************************************************************************** */
 
 //create endpoint for the food place
-<?php
 // api/food_place/create.php
 
 // 1. HEADERS (Standard REST API Headers)

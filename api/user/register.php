@@ -1,3 +1,4 @@
+<?php
 /* ************************************************************************** */
 /*                                                                            */
 /*   Host: DESKTOP-TQURMND                                                    */
@@ -8,7 +9,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-<?php
 
 //1) headers
 header('Access-Control-Allow-Origin: *');
@@ -57,6 +57,6 @@ if (!empty($data->email) && !empty($data->password) && !empty($data->role))
 else
 {
 	http_response_code(400);
-	echo json_encode(array("message" => "Unable to create user. Data is incomplete."));
+	echo json_encode("Unable to create user. Data is incomplete.");
 }
 ?>

@@ -1,3 +1,4 @@
+<?php
 /* ************************************************************************** */
 /*                                                                            */
 /*   Host: DESKTOP-TQURMND                                                    */
@@ -8,10 +9,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-<?php
 // we will test the connections
 // 1. Include the class file
 require_once 'api/DbConnection.php';
+require_once 'models/MenuItem.php';
+
 // 2. Instantiate the class (Create the object)
 $dbObj = new DbConnection();
 // 3. Call the method to connect
@@ -25,4 +27,43 @@ else
 {
 	    echo "<h1>❌ Error. Could not connect.</h1>";
 }
+
+// Test values
+$testValues = [
+    'food_place_id' => 2,
+    'item_name' => 'Bogus Item',
+    'item_description' => 'This is a test item with bogus values.',
+    'price' => 9.99
+];
+
+// Instantiate the MenuItem class
+try {
+    $menuItem = new MenuItem($conn);
+
+    // Set properties
+    $menuItem->food_place_id = $testValues['food_place_id'];
+    $menuItem->item_name = $testValues['item_name'];
+    $menuItem->item_description = $testValues['item_description'];
+    $menuItem->price = $testValues['price'];
+
+    // Print the object to verify it's instantiated correctly
+    echo "<pre>";
+    var_dump($menuItem);
+    echo "</pre>";
+
+    // Try to create the menu item
+    if ($menuItem->create())
+	{
+        echo "Success! The menu item was created.";
+    }
+	else
+	{
+        echo "Failed to create the menu item.";
+    }
+}
+catch (Exception $e)
+{
+    echo "Error: " . $e->getMessage();
+}
 ?>
+
