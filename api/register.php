@@ -9,6 +9,7 @@
 /* ************************************************************************** */
 
 <?php
+
 //1) headers
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');

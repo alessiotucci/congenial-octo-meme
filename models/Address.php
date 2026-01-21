@@ -3,7 +3,7 @@
 /*   Host: DESKTOP-TQURMND                                                    */
 /*   File: Address.php                                                        */
 /*   Created: 2026/01/21 12:26:05 | By: Alessio Tucci <email>                 */
-/*   Updated: 2026/01/21 13:05:03                                             */
+/*   Updated: 2026/01/21 13:10:23                                             */
 /*   OS: WindowsNT 2 x86 | CPU: c:\programdata\chocolatey\lib\unx             */
 /*                                                                            */
 /* ************************************************************************** */
@@ -67,7 +67,8 @@ class Address
 		if ($stmt->execute())
 		{
 			printf("Success! Created the address!\n");
-			return (true);
+			return ($this->conn->lastInsertId()); // this is a FK!
+			//return (true);
 		}
 		else
 		{
