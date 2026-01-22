@@ -1,11 +1,10 @@
 // ************************************************************************** //
-//                                                                        //
-//   Host: e4r2p4.42roma.it                                               //
-//   File: app.js                                                         //
-//   Created: 2026/01/22 13:02:33 | By: atucci <atucci@student.42.fr>     //
-//   Updated: 2026/01/22 13:02:39                                         //
-//   OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i5-8600 CPU @ 3.10GHz | Mem: 16243476 kB    //
-//                                                                        //
+//     File: app.js                                                           //
+//     Author: atucci <atucci@student.42.fr>                                  //
+//     Created: 2026/01/22 13:28:22                                           //
+//     Updated: 2026/01/22 13:28:39                                           //
+//     System: Linux [e4r2p4.42roma.it]                                       //
+//     Hardware: Intel Core i5-8600 | RAM: 15GB                               //
 // ************************************************************************** //
 
 // A simple SPA Router

@@ -6,23 +6,27 @@
     font-family: 'Poppins', sans-serif; /* Modern, clean font */
 }
 
-:root {
+:root
+{
     --primary-color: #00b894; /* Ethical Green */
     --dark-bg: #2d3436;
     --text-color: #2d3436;
     --light-gray: #f5f6fa;
 }
 
-body {
+body
+{
     background-color: var(--light-gray);
     color: var(--text-color);
 }
 
 /* 2. UTILITY CLASSES (For the SPA Logic) */
-.hidden {
+.hidden
+{
     display: none !important;
 }
-.view {
+.view
+{
     animation: fadeIn 0.5s ease; /* Nice transition effect */
 }
 @keyframes fadeIn {
