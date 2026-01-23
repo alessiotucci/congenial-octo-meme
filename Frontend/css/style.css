@@ -1,141 +1,16 @@
-/* 1. GLOBAL RESET & TYPOGRAPHY */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif; /* Modern, clean font */
-}
+/* ************************************************************************** */
+/*     File: css/style.css                                                    */
+/*     Author: atucci <atucci@student.42.fr>                                  */
+/*     Created: 2026/01/22 14:53:01                                           */
+/*     Updated: 2026/01/22 14:53:03                                           */
+/*     System: Linux [e4r2p4.42roma.it]                                       */
+/*     Hardware: Intel Core i5-8600 | RAM: 15GB                               */
+/* ************************************************************************** */
 
-:root
-{
-    --primary-color: #00b894; /* Ethical Green */
-    --dark-bg: #2d3436;
-    --text-color: #2d3436;
-    --light-gray: #f5f6fa;
-}
 
-body
-{
-    background-color: var(--light-gray);
-    color: var(--text-color);
-}
+/* In css/style.css */
 
-/* 2. UTILITY CLASSES (For the SPA Logic) */
-.hidden
-{
+/* This overrides any other display rule because of !important */
+.hidden {
     display: none !important;
-}
-.view
-{
-    animation: fadeIn 0.5s ease; /* Nice transition effect */
-}
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* 3. NAVBAR */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 5%;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.logo {
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: var(--dark-bg);
-}
-
-.highlight {
-    color: var(--primary-color);
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: var(--text-color);
-    margin-left: 2rem;
-    font-weight: 500;
-    transition: color 0.3s;
-}
-
-.nav-links a:hover {
-    color: var(--primary-color);
-}
-
-.btn-signup {
-    background-color: var(--primary-color);
-    color: white !important;
-    padding: 0.5rem 1.5rem;
-    border-radius: 20px;
-}
-
-/* 4. HERO SECTION (The impressive part) */
-.hero {
-    height: 80vh; /* 80% of the screen height */
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
-    background-size: cover;
-    background-position: center;
-    display: flex; /* Flexbox Magic */
-    justify-content: center; /* Center Horizontally */
-    align-items: center; /* Center Vertically */
-    text-align: center;
-    color: white;
-}
-
-.hero h1 {
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
-    line-height: 1.2;
-}
-
-.hero p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    opacity: 0.9;
-}
-
-/* 5. SEARCH BAR */
-.search-box {
-    background: white;
-    padding: 0.5rem;
-    border-radius: 50px;
-    display: flex;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.search-box input {
-    border: none;
-    padding: 1rem;
-    flex: 1; /* Take up all available space */
-    border-radius: 50px;
-    outline: none;
-}
-
-.search-box button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.8rem 2rem;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: transform 0.2s;
-}
-
-.search-box button:hover {
-    transform: scale(1.05);
-}
-
-/* 6. CONTAINER */
-.container {
-    padding: 2rem 5%;
 }
