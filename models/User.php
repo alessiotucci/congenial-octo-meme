@@ -47,7 +47,8 @@ class User
 	if ($stmt->execute())
 	{
 			printf("Success! Created the user!\n");
-			return (true);
+			return ($this->conn->lasInsertId()); //FK (?)
+			//return (true);
 	}
 	else
 	{
