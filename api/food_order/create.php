@@ -20,4 +20,24 @@ include_once '../../config/db_params.php';
 include_once '../../api/DbConnection.php';
 include_once '../../models/FoodOrder.php'; //TODO: saving up for later
 
+$database = new DbConnection();
+$db = $database->connect();
+
+$foodOrder = new FoodOrder($db);
+
+$data = json_decode(file_get_contents("php://input"));
+
+//TODO: finish up the data chcking, I'll do it tomorrow
+if (!empty($data->customer_id) && !empty($data->food_place_id)
+	&& !empty($data->customer_address_id) && !empty($data->order_status_id)
+	&& !empty($data->) && !empty($data->)
+	&& !empty($data->) && !empty($data->) && !empty($data->) )
+{
+
+}
+else
+{
+	http_response_code(400);
+	echo json_encode("Unable to create the Order. Data is incomplete.");
+}
 ?>
