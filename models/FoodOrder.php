@@ -20,10 +20,10 @@ class FoodOrder
 	public $food_place_id;
 	public $customer_address_id;
 	public $order_status_id;
-	public $assigned_driver_id;
+	public $assigned_driver_id; // Can be NULL?
 	public $order_datetime;
 	public $delivery_fee;
-	public $total_amout;
+	public $total_amount;
 	public $requested_delivery_time;
 	public $cust_delivery_rating;
 	public $cust_food_place_rating;
@@ -61,6 +61,8 @@ class FoodOrder
 		$this->cust_delivery_rating = htmlspecialchars(strip_tags($this->cust_delivery_rating));
 		$this->cust_food_place_rating = htmlspecialchars(strip_tags($this->cust_food_place_rating));
 
+		//TODO; handle the nulls?
+
 		// bind the params
 		$stmt->bindParam(':customer_id', $this->customer_id);
 		$stmt->bindParam(':food_place_id', $this->food_place_id);
@@ -77,13 +79,13 @@ class FoodOrder
 		if ($stmt->execute())
 		{
 			printf("Success! Created the order!");
-			return (true);
+			return $this->conn->lastInsertId();
+			/*return (true);*/
 		}
 		else
 		{
 			printf("Failure! Cannot create the order: %s\n", $stmt->error);
 			return (false);
 		}
-
 }
 ?>
