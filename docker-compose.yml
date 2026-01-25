@@ -1,0 +1,68 @@
+# **************************************************************************** #
+#     File: docker-compose.yml                                                 #
+#     Author: atucci <atucci@student.42.fr>                                    #
+#     Created: 2026/01/25 17:58:47                                             #
+#     Updated: 2026/01/25 17:59:45                                             #
+#     System: Linux [e4r3p4.42roma.it]                                         #
+#     Hardware: Intel Core i5-8600 | RAM: 15GB                                 #
+# **************************************************************************** #
+
+version: '3.8'
+
+services:
+  # SERVICE 1: The Database
+  db:
+    image: mysql:5.7
+    container_name: food_db
+    restart: always
+    environment:
+      # We inject the values from the .env file
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - food_net
+
+  # SERVICE 2: The Web App (PHP + Apache)
+  app:
+    build: 
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    container_name: food_app
+    restart: always
+    ports:
+      - "${APP_PORT}:80"
+    volumes:
+      - ./src:/var/www/html
+    environment:
+      # Pass these to PHP so getenv() works
+      DB_HOST: db
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASS: ${MYSQL_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      - food_net
+
+  # SERVICE 3: (Future) OCR AI Service
+  # ocr:
+  #   build: ./docker/python
+  #   environment:
+  #     API_KEY: ${OCR_API_KEY}
+  #   networks:
+  #     - food_net
+
+  # SERVICE 4: (Future) Printing service
+
+  # SERVICE 5: (Future) Redis for caching
+
+volumes:
+  db_data:
+
+networks:
+  food_net:
+    driver: bridge
