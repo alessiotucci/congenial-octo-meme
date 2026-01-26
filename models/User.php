@@ -82,7 +82,7 @@ class User
 	public function read()
 	{
 		$query = 'SELECT id, email, role, created_at
-				  FROM ' . $this->table . 'ORDER BY created_at DESC';
+				  FROM ' . $this->table . ' ORDER BY created_at DESC ';
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		return ($stmt); //returning the statement object
@@ -91,7 +91,7 @@ class User
 	public function read_single()
 	{
 		$query = 'SELECT id, email, role, created_at
-				  FROM ' . $this->table . 'WHERE id = ? LIMIT 0,1';
+				  FROM ' . $this->table . ' WHERE id = ? LIMIT 0,1 ';
 		$stmt = $this->conn->prepare($query);
 		$stmt->bindParam(1, $this->id); //TODO: check api logic
 		$stmt->execute();
@@ -112,7 +112,7 @@ class User
 	//3
 	public function  update()
 	{
-		$query = 'UPDATE ' . $this->table . ' SET email = :email, role = :role
+		$query = 'UPDATE ' . $this->table . ' SET email = :email, role = :role 
 											  WHERE id = :id';
 		$this->email = htmlspecialchars(strip_tags($this->email));
 		$this->role = htmlspecialchars(strip_tags($this->role));
