@@ -14,7 +14,7 @@
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With');
-header('Contet-Type: application/json');
+header('Content-Type: application/json');
 
 
 include_once '../config/db_params.php';
