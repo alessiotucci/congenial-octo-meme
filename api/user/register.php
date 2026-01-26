@@ -17,9 +17,9 @@ header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type
 header('Content-Type: application/json');
 
 
-include_once '../config/db_params.php';
-include_once '../api/DbConnection.php';
-include_once '../models/User.php';
+include_once '../../config/db_params.php';
+include_once '../../api/DbConnection.php';
+include_once '../../models/User.php';
 
 
 $database = new DbConnection();

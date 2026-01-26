@@ -83,7 +83,7 @@ class User
 	{
 		$query = 'SELECT id, email, role, created_at
 				  FROM ' . $this->table . 'ORDER BY created_at DESC';
-		$stmt-> = $this->conn->prepare($query);
+		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		return ($stmt); //returning the statement object
 	}
@@ -117,6 +117,7 @@ class User
 		$this->email = htmlspecialchars(strip_tags($this->email));
 		$this->role = htmlspecialchars(strip_tags($this->role));
 		$this->id = htmlspecialchars(strip_tags($this->id));
+		$stmt = $this->conn->prepare($query);
 
 		$stmt->bindParam(':email', $this->email);
 		$stmt->bindParam(':role', $this->role);
@@ -131,6 +132,7 @@ class User
 			printf("Error: %s.\n", $stmt->error);
 			return (false);
 		}
+	}
 	// 4
 	public function delete()
 	{
