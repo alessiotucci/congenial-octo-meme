@@ -1,13 +1,13 @@
+<?php
 /* ************************************************************************** */
 /*     File: api\user\update.php                                              */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/26 15:04:04                                           */
-/*     Updated: 2026/01/26 15:33:13                                           */
+/*     Updated: 2026/01/27 10:35:30                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
 
-<?php
 
 // always start off with the headers
 header('Access-Control-Allow-Origin: *');

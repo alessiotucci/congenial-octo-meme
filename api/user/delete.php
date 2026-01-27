@@ -1,13 +1,13 @@
+<?php
 /* ************************************************************************** */
 /*     File: api\user\delete.php                                              */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/26 15:11:08                                           */
-/*     Updated: 2026/01/26 15:34:44                                           */
+/*     Updated: 2026/01/27 10:35:06                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
 
-<?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: DELETE');

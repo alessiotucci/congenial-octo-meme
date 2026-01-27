@@ -3,7 +3,7 @@
 /*     File: models\User.php                                                  */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/26 13:05:12                                           */
-/*     Updated: 2026/01/26 13:05:14                                           */
+/*     Updated: 2026/01/27 10:37:09                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
@@ -140,6 +140,7 @@ class User
 		$stmt = $this->conn->prepare($query);
 
 		$this->id = htmlspecialchars(strip_tags($this->id));
+		$stmt->bindParam(':id', $this->id);
 		if ($stmt->execute())
 		{
 			return (true);
