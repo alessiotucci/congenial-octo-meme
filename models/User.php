@@ -3,7 +3,7 @@
 /*     File: models\User.php                                                  */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/26 13:05:12                                           */
-/*     Updated: 2026/01/27 10:37:09                                           */
+/*     Updated: 2026/01/27 11:16:50                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
@@ -110,7 +110,7 @@ class User
 		}
 	}
 	//3
-	public function  update()
+	public function update()
 	{
 		$query = 'UPDATE ' . $this->table . ' SET email = :email, role = :role 
 											  WHERE id = :id';

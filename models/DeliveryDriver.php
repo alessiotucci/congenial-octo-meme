@@ -3,7 +3,7 @@
 /*     File: DeliveryDriver.php                                               */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/23 15:56:32                                           */
-/*     Updated: 2026/01/23 15:56:32                                           */
+/*     Updated: 2026/01/27 12:07:15                                           */
 /*     System: WindowsNT [DESKTOP-TQURMND]                                    */
 /*     Hardware: c:\programdata\chocolatey\lib\unxutils\tools\unxutils...     */
 /* ************************************************************************** */
@@ -42,7 +42,7 @@ class DeliveryDriver
 		//TODO: we need a function to normalize the phone number, otherwise this
 		// field is pointless
 		$this->phone_number_normalized = htmlspecialchars(strip_tags($this->phone_number_normalized));
-		$this->rating = htmlspecialchars(strip_tags($this->first_name));
+		$this->rating = htmlspecialchars(strip_tags($this->rating));
 		$this->user_id = htmlspecialchars(strip_tags($this->user_id));
 
 		// bind the params
@@ -66,5 +66,34 @@ class DeliveryDriver
 			return (false);
 		}
 	}
+
+	// FUNCTION TO READ ALL
+	public function read()
+	{
+		$query = 'SELECT dd.id, dd.first_name, dd.last_name, dd.rating,
+				  dd.phone_number_normalized, u.email, u.role, u.created_at
+				  FROM ' . $this->table . '  dd 
+				  LEFT JOIN users u ON dd.user_id = u.id;';
+		$stmt = $this->conn->prepare($query);
+		$stmt->execute();
+		return ($stmt);
+	}
+
+	// FUNCTION TO READ BY ID
+	public function read_single()
+	{
+
+	}
+
+	// FUNCTION TO UPDATE VALUES
+	public function update()
+	{
+
+	}
+	// FUNCTION TO DELETE A DELIVERY DRIVER
+	public function delete()
+	{
+
+	}
 }
-?>
+?>d

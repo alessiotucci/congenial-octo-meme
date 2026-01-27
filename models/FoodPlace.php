@@ -1,16 +1,15 @@
+<?php
 /* ************************************************************************** */
-/*                                                                            */
-/*   Host: DESKTOP-TQURMND                                                    */
-/*   File: FoodPlace.php                                                      */
-/*   Created: 2026/01/20 19:28:10 | By: marvin <marvin@42.fr>                 */
-/*   Updated: 2026/01/21 13:14:53                                             */
-/*   OS: WindowsNT 2 x86 | CPU: c:\programdata\chocolatey\lib\unx             */
-/*                                                                            */
+/*     File: models\FoodPlace.php                                             */
+/*     Author: atucci <atucci@student.42.fr>                                  */
+/*     Created: 2026/01/27 10:43:35                                           */
+/*     Updated: 2026/01/27 11:12:11                                           */
+/*     System: unknown [SurfaceLaptopmy]                                      */
+/*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
 
 //TODO: refactor this class to have a small instance of address inside of it!
 
-<?php
 // class for the FoodPlace
 include_once 'Address.php'; // Ensure we can see the smaller class
 class FoodPlace
@@ -20,6 +19,7 @@ class FoodPlace
 
     // Properties that match the table columns
     public $id;
+	public $user_id; // this is a FK
     public $name;
     public $address_id; // this is a FK
     public $average_rating;
@@ -29,18 +29,21 @@ class FoodPlace
     public $opening_hours;
 
 	// Address Properties (We need these here to receive data from the API)
-	//TODO:or we can just create an istance of the class Address inside of it!
-    public $unit_number;
+    /*public $unit_number;
     public $street_number;
     public $address_line1;
     public $address_line2;
     public $region;
     public $postal_code;
-    public $country_id;
+    public $country_id;*/
+
+	//TODO:or we can just create an istance of the class Address inside of it!
+	public $address;
 
     public function __construct($db)
     {
         $this->conn = $db;
+		$this->address = new Address($db) //SETTING IT UP IN THE CONSTRUCTOR
     }
 
     // Method to create a new food place TODO: do not work with the FK
@@ -173,5 +176,8 @@ class FoodPlace
             return false;
         }
     }
+	//TODO: READ_SINGLE
+	//TODO: update
+	//TODO  delete
 }
 ?>
