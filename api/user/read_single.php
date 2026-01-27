@@ -1,12 +1,12 @@
+<?php
 /* ************************************************************************** */
 /*     File: api\user\read_single.php                                         */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/26 14:51:54                                           */
-/*     Updated: 2026/01/26 15:33:42                                           */
+/*     Updated: 2026/01/27 10:30:53                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
-<?php
 
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');

@@ -3,7 +3,7 @@
 /*     File: api\user\read.php                                                */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/26 13:23:44                                           */
-/*     Updated: 2026/01/26 14:53:59                                           */
+/*     Updated: 2026/01/27 10:31:08                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
