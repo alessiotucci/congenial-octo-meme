@@ -3,7 +3,7 @@
 /*     File: api\user\read_single.php                                         */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/26 14:51:54                                           */
-/*     Updated: 2026/01/27 10:30:53                                           */
+/*     Updated: 2026/01/27 17:52:21                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
@@ -20,7 +20,7 @@ $db = $database->connect();
 
 $user = new User($db);
 
-$user->id = isset($_GET['id']) ? $_GET['id'] : die(); // TODO
+$user->id = isset($_GET['id']) ? $_GET['id'] : die('Didnt get an id'); // TODO
 if ($user->read_single())
 {
 	$user_arr = array(

@@ -3,7 +3,7 @@
 /*     File: DeliveryDriver.php                                               */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/23 15:56:32                                           */
-/*     Updated: 2026/01/27 12:07:15                                           */
+/*     Updated: 2026/01/27 17:45:28                                           */
 /*     System: WindowsNT [DESKTOP-TQURMND]                                    */
 /*     Hardware: c:\programdata\chocolatey\lib\unxutils\tools\unxutils...     */
 /* ************************************************************************** */
@@ -82,7 +82,30 @@ class DeliveryDriver
 	// FUNCTION TO READ BY ID
 	public function read_single()
 	{
+		$query = 'SELECT dd.id, dd.first_name, dd.last_name, dd.rating,
+				  dd.phone_number_normalized, u.email, u.role, u.created_at
+				  FROM ' . $this->table . '  dd WHERE dd.id = ? LIMIT 0,1
+				  LEFT JOIN users u ON dd.user_id = u.id;';
+		$stmt = $this->conn->prepare($query);
+		$stmt->bindParam(1, $this->id);
+		$stmt->execute();
 
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		if ($row)
+		{
+			$this->id = $row['id'];
+			$this->first_name = $row['first_name'];
+			$this->last_name = $row['last_name'];
+			$this->rating = $row['rating'];
+			$this->phone_number_normalized = $row['phone_number_normalized'];
+			$this->email = $row['email'];
+			$this->role = $row['role'];
+			$this->created_at = $row['created_at'];
+		}
+		else
+		{
+			return (false);
+		}
 	}
 
 	// FUNCTION TO UPDATE VALUES
