@@ -3,7 +3,7 @@
 /*     File: read.php                                                         */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/27 11:42:58                                           */
-/*     Updated: 2026/01/27 12:12:16                                           */
+/*     Updated: 2026/01/27 18:45:19                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
@@ -38,7 +38,8 @@ if ($num > 0)
 					'phone_number_normalized' => $phone_number_normalized,
 					'email' => $email,
 					'role' => $role,
-					'created_at' => $created_at
+					'created_at' => $created_at,
+					'user_id' => $user_id
 				);
 		array_push($delivery_driver_arr['data'], $item);
 	}

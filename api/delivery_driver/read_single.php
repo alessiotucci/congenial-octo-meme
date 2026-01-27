@@ -3,7 +3,7 @@
 /*     File: api\delivery_driver\read_single.php                              */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/27 17:38:06                                           */
-/*     Updated: 2026/01/27 17:49:03                                           */
+/*     Updated: 2026/01/27 18:51:48                                           */
 /*     System: unknown [DESKTOP-12TRQA8]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
@@ -31,7 +31,7 @@ if ($delivery_driver->read_single())
 				'phone_number_normalized' => $delivery_driver->phone_number_normalized,
 				'email' => $delivery_driver->email,
 				'role' => $delivery_driver->role,
-				'created_at' => $delivery_driver->created_at
+				'created_at' => $delivery_driver->created_at,
 			);
 	http_response_code(200);
 	echo json_encode($delivery_driver_arr);
@@ -39,6 +39,6 @@ if ($delivery_driver->read_single())
 else
 {
 	http_response_code(404);
-	echo json_encode("Error: DeliveryDriver not found.");
+	echo json_encode("Error: Delivery Driver not found.");
 }
 ?>
