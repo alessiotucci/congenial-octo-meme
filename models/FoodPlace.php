@@ -3,7 +3,7 @@
 /*     File: models\FoodPlace.php                                             */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/27 10:43:35                                           */
-/*     Updated: 2026/01/27 11:12:11                                           */
+/*     Updated: 2026/01/27 18:59:28                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
@@ -152,6 +152,7 @@ class FoodPlace
     }
 
     // Method to fetch a food place by ID
+	// TODO: fix this bullshit
     public function read()
     {
         $query = 'SELECT * FROM ' . $this->table . ' WHERE id = ? LIMIT 0,1';
