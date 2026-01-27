@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 22, 2026 at 11:08 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Creato il: Gen 27, 2026 alle 14:38
+-- Versione del server: 10.4.32-MariaDB
+-- Versione PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `address`
+-- Struttura della tabella `address`
 --
 
 CREATE TABLE `address` (
@@ -40,7 +40,7 @@ CREATE TABLE `address` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `address`
+-- Dump dei dati per la tabella `address`
 --
 
 INSERT INTO `address` (`id`, `unit_number`, `street_number`, `address_line1`, `address_line2`, `city`, `region`, `postal_code`, `country_id`) VALUES
@@ -49,7 +49,7 @@ INSERT INTO `address` (`id`, `unit_number`, `street_number`, `address_line1`, `a
 -- --------------------------------------------------------
 
 --
--- Table structure for table `country`
+-- Struttura della tabella `country`
 --
 
 CREATE TABLE `country` (
@@ -58,7 +58,7 @@ CREATE TABLE `country` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `country`
+-- Dump dei dati per la tabella `country`
 --
 
 INSERT INTO `country` (`id`, `country_name`) VALUES
@@ -67,7 +67,7 @@ INSERT INTO `country` (`id`, `country_name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `customer`
+-- Struttura della tabella `customer`
 --
 
 CREATE TABLE `customer` (
@@ -83,7 +83,7 @@ CREATE TABLE `customer` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `customer_address`
+-- Struttura della tabella `customer_address`
 --
 
 CREATE TABLE `customer_address` (
@@ -95,7 +95,7 @@ CREATE TABLE `customer_address` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `delivery_drivers`
+-- Struttura della tabella `delivery_drivers`
 --
 
 CREATE TABLE `delivery_drivers` (
@@ -108,10 +108,20 @@ CREATE TABLE `delivery_drivers` (
   `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dump dei dati per la tabella `delivery_drivers`
+--
+
+INSERT INTO `delivery_drivers` (`id`, `first_name`, `last_name`, `phone_number_original`, `phone_number_normalized`, `rating`, `user_id`) VALUES
+(1, 'Oussema', 'Fadhel', '+3935533668343', '', 0, 1),
+(2, 'Anjio', 'Baunjil', '+3935533668343', '', 0, 2),
+(3, 'Rick', 'Terun', '+3935533668343', '', 4, 3),
+(4, 'Mohammed', 'Abdallah', '+3935533668343', '', 5, 3);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `food_order`
+-- Struttura della tabella `food_order`
 --
 
 CREATE TABLE `food_order` (
@@ -132,7 +142,7 @@ CREATE TABLE `food_order` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `food_place`
+-- Struttura della tabella `food_place`
 --
 
 CREATE TABLE `food_place` (
@@ -148,7 +158,7 @@ CREATE TABLE `food_place` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `food_place`
+-- Dump dei dati per la tabella `food_place`
 --
 
 INSERT INTO `food_place` (`id`, `name`, `address_id`, `average_rating`, `total_reviews`, `food_type`, `description`, `opening_hours`, `user_id`) VALUES
@@ -157,7 +167,7 @@ INSERT INTO `food_place` (`id`, `name`, `address_id`, `average_rating`, `total_r
 -- --------------------------------------------------------
 
 --
--- Table structure for table `menu_item`
+-- Struttura della tabella `menu_item`
 --
 
 CREATE TABLE `menu_item` (
@@ -169,7 +179,7 @@ CREATE TABLE `menu_item` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `menu_item`
+-- Dump dei dati per la tabella `menu_item`
 --
 
 INSERT INTO `menu_item` (`id`, `food_place_id`, `item_name`, `item_description`, `price`) VALUES
@@ -179,7 +189,7 @@ INSERT INTO `menu_item` (`id`, `food_place_id`, `item_name`, `item_description`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order_status`
+-- Struttura della tabella `order_status`
 --
 
 CREATE TABLE `order_status` (
@@ -188,7 +198,7 @@ CREATE TABLE `order_status` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `order_status`
+-- Dump dei dati per la tabella `order_status`
 --
 
 INSERT INTO `order_status` (`id`, `status_value`) VALUES
@@ -202,7 +212,7 @@ INSERT INTO `order_status` (`id`, `status_value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Struttura della tabella `users`
 --
 
 CREATE TABLE `users` (
@@ -214,7 +224,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Dump dei dati per la tabella `users`
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `role`, `created_at`) VALUES
@@ -223,31 +233,31 @@ INSERT INTO `users` (`id`, `email`, `password`, `role`, `created_at`) VALUES
 (3, 'testLuca@example.com', '$2y$10$xcG0omCxfot1qzIyO6xtseCZqB8Uato2E2l7nKIhRRy/YeUxnDT2q', 'customer', '2026-01-20 13:01:53');
 
 --
--- Indexes for dumped tables
+-- Indici per le tabelle scaricate
 --
 
 --
--- Indexes for table `address`
+-- Indici per le tabelle `address`
 --
 ALTER TABLE `address`
   ADD PRIMARY KEY (`id`),
   ADD KEY `country_id` (`country_id`);
 
 --
--- Indexes for table `country`
+-- Indici per le tabelle `country`
 --
 ALTER TABLE `country`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `customer`
+-- Indici per le tabelle `customer`
 --
 ALTER TABLE `customer`
   ADD PRIMARY KEY (`id`),
   ADD KEY `phone_number_normalized` (`phone_number_normalized`);
 
 --
--- Indexes for table `customer_address`
+-- Indici per le tabelle `customer_address`
 --
 ALTER TABLE `customer_address`
   ADD PRIMARY KEY (`id`),
@@ -255,14 +265,14 @@ ALTER TABLE `customer_address`
   ADD KEY `address_id` (`address_id`);
 
 --
--- Indexes for table `delivery_drivers`
+-- Indici per le tabelle `delivery_drivers`
 --
 ALTER TABLE `delivery_drivers`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `food_order`
+-- Indici per le tabelle `food_order`
 --
 ALTER TABLE `food_order`
   ADD PRIMARY KEY (`id`),
@@ -273,7 +283,7 @@ ALTER TABLE `food_order`
   ADD KEY `assigned_driver_id` (`assigned_driver_id`);
 
 --
--- Indexes for table `food_place`
+-- Indici per le tabelle `food_place`
 --
 ALTER TABLE `food_place`
   ADD PRIMARY KEY (`id`),
@@ -281,114 +291,114 @@ ALTER TABLE `food_place`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `menu_item`
+-- Indici per le tabelle `menu_item`
 --
 ALTER TABLE `menu_item`
   ADD PRIMARY KEY (`id`),
   ADD KEY `food_place_id` (`food_place_id`);
 
 --
--- Indexes for table `order_status`
+-- Indici per le tabelle `order_status`
 --
 ALTER TABLE `order_status`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Indici per le tabelle `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT per le tabelle scaricate
 --
 
 --
--- AUTO_INCREMENT for table `address`
+-- AUTO_INCREMENT per la tabella `address`
 --
 ALTER TABLE `address`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `country`
+-- AUTO_INCREMENT per la tabella `country`
 --
 ALTER TABLE `country`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `customer`
+-- AUTO_INCREMENT per la tabella `customer`
 --
 ALTER TABLE `customer`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `customer_address`
+-- AUTO_INCREMENT per la tabella `customer_address`
 --
 ALTER TABLE `customer_address`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `delivery_drivers`
+-- AUTO_INCREMENT per la tabella `delivery_drivers`
 --
 ALTER TABLE `delivery_drivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `food_order`
+-- AUTO_INCREMENT per la tabella `food_order`
 --
 ALTER TABLE `food_order`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `food_place`
+-- AUTO_INCREMENT per la tabella `food_place`
 --
 ALTER TABLE `food_place`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `menu_item`
+-- AUTO_INCREMENT per la tabella `menu_item`
 --
 ALTER TABLE `menu_item`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `order_status`
+-- AUTO_INCREMENT per la tabella `order_status`
 --
 ALTER TABLE `order_status`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT per la tabella `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- Constraints for dumped tables
+-- Limiti per le tabelle scaricate
 --
 
 --
--- Constraints for table `address`
+-- Limiti per la tabella `address`
 --
 ALTER TABLE `address`
   ADD CONSTRAINT `address_ibfk_1` FOREIGN KEY (`country_id`) REFERENCES `country` (`id`);
 
 --
--- Constraints for table `customer_address`
+-- Limiti per la tabella `customer_address`
 --
 ALTER TABLE `customer_address`
   ADD CONSTRAINT `customer_address_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
   ADD CONSTRAINT `customer_address_ibfk_2` FOREIGN KEY (`address_id`) REFERENCES `address` (`id`);
 
 --
--- Constraints for table `delivery_drivers`
+-- Limiti per la tabella `delivery_drivers`
 --
 ALTER TABLE `delivery_drivers`
   ADD CONSTRAINT `delivery_drivers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `food_order`
+-- Limiti per la tabella `food_order`
 --
 ALTER TABLE `food_order`
   ADD CONSTRAINT `food_order_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
@@ -398,14 +408,14 @@ ALTER TABLE `food_order`
   ADD CONSTRAINT `food_order_ibfk_5` FOREIGN KEY (`assigned_driver_id`) REFERENCES `delivery_drivers` (`id`);
 
 --
--- Constraints for table `food_place`
+-- Limiti per la tabella `food_place`
 --
 ALTER TABLE `food_place`
   ADD CONSTRAINT `food_place_ibfk_1` FOREIGN KEY (`address_id`) REFERENCES `address` (`id`),
   ADD CONSTRAINT `food_place_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `menu_item`
+-- Limiti per la tabella `menu_item`
 --
 ALTER TABLE `menu_item`
   ADD CONSTRAINT `menu_item_ibfk_1` FOREIGN KEY (`food_place_id`) REFERENCES `food_place` (`id`);
