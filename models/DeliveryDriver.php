@@ -118,7 +118,7 @@ class DeliveryDriver
 				SET
 					first_name = :first_name,
 					last_name = :last_name,
-					phone_number_original = :phone
+					phone_number_original = :phone_number_original
 				WHERE
 					id = :id';
 		
@@ -151,7 +151,7 @@ class DeliveryDriver
 		$check_query = "SELECT id FROM food_order
 						WHERE assigned_driver_id = ?
 						AND order_status_id != 4
-						LIMIT 1"
+						LIMIT 1";
 
 		$check_stmt = $this->conn->prepare($check_query);
 		$check_stmt->bindParam(1, $this->id);
