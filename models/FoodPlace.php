@@ -43,7 +43,7 @@ class FoodPlace
     public function __construct($db)
     {
         $this->conn = $db;
-		$this->address = new Address($db) //SETTING IT UP IN THE CONSTRUCTOR
+		$this->address = new Address($db); //SETTING IT UP IN THE CONSTRUCTOR
     }
 
     // Method to create a new food place TODO: do not work with the FK
