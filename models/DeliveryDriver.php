@@ -3,7 +3,7 @@
 /*     File: DeliveryDriver.php                                               */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/23 15:56:32                                           */
-/*     Updated: 2026/01/27 18:52:06                                           */
+/*     Updated: 2026/01/29 16:51:36                                           */
 /*     System: WindowsNT [DESKTOP-TQURMND]                                    */
 /*     Hardware: c:\programdata\chocolatey\lib\unxutils\tools\unxutils...     */
 /* ************************************************************************** */
@@ -114,12 +114,72 @@ class DeliveryDriver
 	// FUNCTION TO UPDATE VALUES
 	public function update()
 	{
+		$query = 'UPDATE ' . $this->table . '
+				SET
+					first_name = :first_name,
+					last_name = :last_name,
+					phone_number_original = :phone
+				WHERE
+					id = :id';
+		
+		$stmt = $this->conn->prepare($query);
 
+		$this->first_name = htmlspecialchars(strip_tags($this->first_name));
+		$this->last_name = htmlspecialchars(strip_tags($this->last_name));
+		$this->phone_number_original = htmlspecialchars(strip_tags($this->phone_number_original));
+		$this->id = htmlspecialchars(strip_tags($this->id));
+
+		$stmt->bindParam(':first_name', $this->first_name);
+		$stmt->bindParam(':last_name', $this->last_name);
+		$stmt->bindParam(':phone_number_original', $this->phone_number_original);
+		$stmt->bindParam(':id', $this->id);
+
+		if ($stmt->execute())
+		{
+			printf("Update the Delivery infos");
+			return (true);
+		}
+		else
+		{
+			printf("Error: cannot Update the infos: %s\n", $stmt->error);
+			return (false);
+		}
 	}
 	// FUNCTION TO DELETE A DELIVERY DRIVER
 	public function delete()
 	{
+		$check_query = "SELECT id FROM food_order
+						WHERE assigned_driver_id = ?
+						AND order_status_id != 4
+						LIMIT 1"
 
+		$check_stmt = $this->conn->prepare($check_query);
+		$check_stmt->bindParam(1, $this->id);
+		$check_stmt->execute();
+		if ($check_stmt->rowCount() > 0)
+		{
+			printf("Driver is busy with orders! Cannot delete it right now!");
+			return (false);
+		}
+		else
+		{
+			$query = 'DELETE FROM ' . $this->table . ' WHERE id = :id';
+			$stmt = $this->conn->prepare($query);
+
+			$this->id = htmlspecialchars(strip_tags($this->id));
+			$stmt->bindParam(':id', $this->id);
+
+			if ($stmt->execute())
+			{
+				printf("Success! Delete the Driver");
+				return (true);
+			}
+			else
+			{
+				printf("Error: during the delete of Driver: %s\n", $stmt->error);
+				return (false);
+			}
+		}
 	}
 }
-?>d
+?>
