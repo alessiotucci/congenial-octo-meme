@@ -46,74 +46,20 @@ class FoodPlace
 		$this->address = new Address($db); //SETTING IT UP IN THE CONSTRUCTOR
     }
 
-    // Method to create a new food place TODO: do not work with the FK
-    public function create()
-    {
-        $query = 'INSERT INTO ' . $this->table . ' SET
-            name = :name,
-            address_id = :address_id,
-            average_rating = :average_rating,
-            total_reviews = :total_reviews,
-            food_type = :food_type,
-            description = :description,
-            opening_hours = :opening_hours';
-
-        $stmt = $this->conn->prepare($query);
-
-        // Sanitize input
-        $this->name = htmlspecialchars(strip_tags($this->name));
-        $this->address_id = htmlspecialchars(strip_tags($this->address_id));
-        $this->average_rating = htmlspecialchars(strip_tags($this->average_rating));
-        $this->total_reviews = htmlspecialchars(strip_tags($this->total_reviews));
-        $this->food_type = htmlspecialchars(strip_tags($this->food_type));
-        $this->description = htmlspecialchars(strip_tags($this->description));
-        $this->opening_hours = htmlspecialchars(strip_tags($this->opening_hours));
-
-        // Bind parameters
-        $stmt->bindParam(':name', $this->name);
-        $stmt->bindParam(':address_id', $this->address_id);
-        $stmt->bindParam(':average_rating', $this->average_rating);
-        $stmt->bindParam(':total_reviews', $this->total_reviews);
-        $stmt->bindParam(':food_type', $this->food_type);
-        $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':opening_hours', $this->opening_hours);
-
-        if ($stmt->execute())
-			{
-            printf("Success! Created the food place!\n");
-            return true;
-        }
-		else
-		{
-            printf("Error: %s.\n", $stmt->error);
-            return false;
-        }
-    }
 	public function createWithAddress()
 	{
         try
 		{
             $this->conn->beginTransaction();
-            // 1. COMPOSITION: Create the "Smaller" Object
-            // We pass OUR connection to the new Address object
-            $address = new Address($this->conn);
-            // 2. Pass data to the smaller object
-			$address->unit_number = $this->unit_number;
-			$address->street_number = $this->street_number;
-            $address->address_line1 = $this->address_line1;
-			$address->address_line2 = $this->address_line2;
-			$address->region = $this->region;
-			$address->postal_code = $this->postal_code;
-			$address->country_id = $this->country_id;
-			// 3. CALL THE METHOD (Get the ID back)
-            $address_id = $address->create(); 
+            $address_id = $this->address->create(); 
             if (!$address_id)
 			{
                 throw new Exception("Failed to create address.");
             }
             // 4. Create the FoodPlace using that ID
             $query = 'INSERT INTO ' . $this->table . ' 
-                      SET 
+                      SET
+						user_id = :user_id,
                         name = :name,
                         address_id = :addr_id,  /* <--- The Critical Link */
                         food_type = :food_type,
@@ -123,14 +69,16 @@ class FoodPlace
             $stmt = $this->conn->prepare($query);
 
             // Sanitize FoodPlace data
+			$this->user_id = htmlspecialchars(strip_tags($this->user_id));
             $this->name = htmlspecialchars(strip_tags($this->name));
             $this->food_type = htmlspecialchars(strip_tags($this->food_type));
             $this->description = htmlspecialchars(strip_tags($this->description));
             $this->opening_hours = htmlspecialchars(strip_tags($this->opening_hours));
 
             // Bind Params
+			$stmt->bindParam(':user_id', $this->user_id);
             $stmt->bindParam(':name', $this->name);
-            $stmt->bindParam(':addr_id', $address_id); // Use the variable, not $this->address_id
+            $stmt->bindParam(':addr_id', $address_id); // Use the variable! not $this->address_id
             $stmt->bindParam(':food_type', $this->food_type);
             $stmt->bindParam(':desc', $this->description);
             $stmt->bindParam(':hours', $this->opening_hours);
@@ -140,6 +88,8 @@ class FoodPlace
                 throw new Exception("Failed to create Food Place.");
             }
             // 5. Commit (Save everything)
+			//TODO: Wait, bu why?
+			$this->id = $this->conn->lastInsertId();
             $this->conn->commit();
             return true;
 
@@ -151,34 +101,199 @@ class FoodPlace
         }
     }
 
-    // Method to fetch a food place by ID
-	// TODO: fix this bullshit
+// ------------------------------------------------------------------
+    // 2. READ ALL (Join Address info)
+    // ------------------------------------------------------------------
     public function read()
     {
-        $query = 'SELECT * FROM ' . $this->table . ' WHERE id = ? LIMIT 0,1';
+		try
+		{
+		  $query = 'SELECT 
+              p.id, p.user_id, p.name, p.food_type, p.average_rating,
+              a.address_line1, a.city, a.country_id
+            FROM ' . $this->table . ' p
+            LEFT JOIN address a ON p.address_id = a.id
+            ORDER BY p.id DESC';
+
+        	$stmt = $this->conn->prepare($query);
+        	if (!$stmt)
+				throw new Exception('Query preparation failed!');
+			if (!$stmt->execute())
+				throw new Exception('Query execution failed!');
+        	return $stmt;	
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+        // Selects Restaurant info AND City/Street from Address table
+
+    }
+
+	//TODO: READ_SINGLE
+	// ------------------------------------------------------------------
+    // 3. READ SINGLE (Fully Hydrate both Objects)
+    // ------------------------------------------------------------------
+    public function read_single()
+    {
+        $query = 'SELECT 
+                    p.*,
+                    a.unit_number, a.street_number, a.address_line1, a.address_line2, 
+                    a.city, a.region, a.postal_code, a.country_id
+                  FROM ' . $this->table . ' p
+                  LEFT JOIN address a ON p.address_id = a.id
+                  WHERE p.id = ? LIMIT 0,1';
+
         $stmt = $this->conn->prepare($query);
-        $this->id = htmlspecialchars(strip_tags($this->id));
         $stmt->bindParam(1, $this->id);
         $stmt->execute();
 
-        if ($stmt->rowCount() > 0) {
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row)
+		{
+            // Fill FoodPlace properties
+            $this->user_id = $row['user_id'];
             $this->name = $row['name'];
             $this->address_id = $row['address_id'];
-            $this->average_rating = $row['average_rating'];
-            $this->total_reviews = $row['total_reviews'];
             $this->food_type = $row['food_type'];
             $this->description = $row['description'];
             $this->opening_hours = $row['opening_hours'];
+            $this->average_rating = $row['average_rating'];
+            $this->total_reviews = $row['total_reviews'];
+
+            // Fill Address Object properties
+            $this->address->id = $row['address_id'];
+            $this->address->unit_number = $row['unit_number'];
+            $this->address->street_number = $row['street_number'];
+            $this->address->address_line1 = $row['address_line1'];
+            $this->address->address_line2 = $row['address_line2'];
+            $this->address->city = $row['city'];
+            $this->address->region = $row['region'];
+            $this->address->postal_code = $row['postal_code'];
+            $this->address->country_id = $row['country_id'];
             return true;
         }
-		else
+        return false;
+    }
+
+// ------------------------------------------------------------------
+    // 4. UPDATE (Update Place + Delegate Address Update)
+    // ------------------------------------------------------------------
+    public function update()
+    {
+        try {
+            $this->conn->beginTransaction();
+
+            // A. Update FoodPlace Fields
+            $query = 'UPDATE ' . $this->table . '
+                      SET 
+                        name = :name,
+                        food_type = :food_type,
+                        description = :desc,
+                        opening_hours = :hours
+                      WHERE id = :id';
+
+            $stmt = $this->conn->prepare($query);
+
+            $this->name = htmlspecialchars(strip_tags($this->name));
+            $this->food_type = htmlspecialchars(strip_tags($this->food_type));
+            $this->description = htmlspecialchars(strip_tags($this->description));
+            $this->opening_hours = htmlspecialchars(strip_tags($this->opening_hours));
+            $this->id = htmlspecialchars(strip_tags($this->id));
+
+            $stmt->bindParam(':name', $this->name);
+            $stmt->bindParam(':food_type', $this->food_type);
+            $stmt->bindParam(':desc', $this->description);
+            $stmt->bindParam(':hours', $this->opening_hours);
+            $stmt->bindParam(':id', $this->id);
+
+            if (!$stmt->execute())
+				throw new Exception("Restaurant update failed.");
+
+            // B. Find the associated Address ID
+            // We do this to be safe, ensuring we update the correct address row
+            $sqlAddress = "SELECT address_id FROM " . $this->table . " WHERE id = :id";
+            $stmtAddr = $this->conn->prepare($sqlAddress);
+            $stmtAddr->bindParam(':id', $this->id);
+            $stmtAddr->execute();
+            $row = $stmtAddr->fetch(PDO::FETCH_ASSOC);
+
+            if ($row && $row['address_id'])
+			{
+                // Set the ID on the child object and tell it to update itself
+                $this->address->id = $row['address_id'];
+                // The address properties (city, zip, etc.) should already be set 
+                // on $this->address by the controller before calling this method.
+                if (!$this->address->update())
+				{
+                    throw new Exception("Address update failed.");
+                }
+            }
+            $this->conn->commit();
+            return true;
+
+        }
+		catch (Exception $e)
 		{
+            $this->conn->rollBack();
             return false;
         }
     }
-	//TODO: READ_SINGLE
-	//TODO: update
-	//TODO  delete
+
+    // ------------------------------------------------------------------
+    // 5. DELETE (Strict Mode) TODO: double check this function
+    // ------------------------------------------------------------------
+    public function delete()
+    {
+        // A. Check for Active Orders (Status < 4)
+        $checkQuery = "SELECT id FROM food_order WHERE food_place_id = ? AND order_status_id < 4 LIMIT 1";
+        $checkStmt = $this->conn->prepare($checkQuery);
+        $checkStmt->bindParam(1, $this->id);
+        $checkStmt->execute();
+
+        if ($checkStmt->rowCount() > 0)
+		{
+            return "BUSY"; // Custom error code
+        }
+
+        try
+		{
+            $this->conn->beginTransaction();
+
+            // B. Get Address ID (to delete it later)
+            $sqlGetAddr = "SELECT address_id FROM " . $this->table . " WHERE id = ?";
+            $stmtGet = $this->conn->prepare($sqlGetAddr);
+            $stmtGet->bindParam(1, $this->id);
+            $stmtGet->execute();
+            $row = $stmtGet->fetch(PDO::FETCH_ASSOC);
+            $addr_id_to_delete = $row['address_id'];
+
+            // C. Delete FoodPlace
+            $query = "DELETE FROM " . $this->table . " WHERE id = :id";
+            $stmt = $this->conn->prepare($query);
+            $this->id = htmlspecialchars(strip_tags($this->id));
+            $stmt->bindParam(':id', $this->id);
+
+            if (!$stmt->execute()) throw new Exception("Delete failed.");
+
+            // D. Delete Orphan Address
+            if ($addr_id_to_delete)
+			{
+                $this->address->id = $addr_id_to_delete;
+                if (!$this->address->delete())
+					throw new Exception("Address delete failed.");
+            }
+
+            $this->conn->commit();
+            return true;
+
+        }
+		catch (Exception $e)
+		{
+            $this->conn->rollBack();
+            return false;
+        }
+    }
 }
 ?>

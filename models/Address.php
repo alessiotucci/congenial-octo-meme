@@ -84,10 +84,20 @@ class Address
 // 2. READ (Get All - rarely used for addresses, but good to have)
 public function read()
 {			//TODO: remove the select *, it can break things
-	$query = 'SELECT * FROM ' . $this->table . ' ORDER BY id DESC';
-	$stmt = $this->conn->prepare($query);
-	$stmt->execute();
-	return $stmt;
+	try
+	{
+		$query = 'SELECT * FROM ' . $this->table . ' ORDER BY id DESC';
+		$stmt = $this->conn->prepare($query);
+			if (!$stmt)
+				throw new Exception('Query preparation failed!');
+			if (!$stmt->execute())
+					throw new Exception('Query execution failed!');
+			return ($stmt); //returning the statement object
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
 }
 
 // 3. READ SINGLE

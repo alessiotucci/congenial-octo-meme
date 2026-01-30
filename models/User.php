@@ -3,7 +3,7 @@
 /*     File: models\User.php                                                  */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/26 13:05:12                                           */
-/*     Updated: 2026/01/27 11:16:50                                           */
+/*     Updated: 2026/01/30 19:23:17                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
@@ -81,11 +81,21 @@ class User
 	// 1)
 	public function read()
 	{
-		$query = 'SELECT id, email, role, created_at
-				  FROM ' . $this->table . ' ORDER BY created_at DESC ';
-		$stmt = $this->conn->prepare($query);
-		$stmt->execute();
-		return ($stmt); //returning the statement object
+		try
+		{
+			$query = 'SELECT id, email, role, created_at
+					  FROM ' . $this->table . ' ORDER BY created_at DESC ';
+			$stmt = $this->conn->prepare($query);
+			if (!$stmt)
+				throw new Exception('Query preparation failed!');
+			if (!$stmt->execute())
+					throw new Exception('Query execution failed!');
+			return ($stmt); //returning the statement object
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
 	}
 	// 2)
 	public function read_single()
