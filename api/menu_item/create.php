@@ -9,55 +9,41 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//create endpoint for the menu item
 // api/menu_item/create.php
-
-// 1. HEADERS (Standard REST API Headers)
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
-// 2. INCLUDES
-// We go up two levels (../../) because we are in api/menu_item/
 include_once '../../config/db_params.php';
 include_once '../../api/DbConnection.php';
 include_once '../../models/MenuItem.php';
 
-// 3. DATABASE CONNECTION
 $database = new DbConnection();
 $db = $database->connect();
+$item = new MenuItem($db);
 
-// 4. INSTANTIATE THE OBJECT
-$menuItem = new MenuItem($db);
-
-
-// 5. GET THE DATA
 $data = json_decode(file_get_contents("php://input"));
 
-// 6. VALIDATE THE DATA
-if (!empty($data->food_place_id) && !empty($data->item_name)
-	&& !empty($data->price))
-{
-	$menuItem->item_name = $data->item_name;
-	$menuItem->price = $data->price;
-	$menuItem->item_description = $data->item_description ?? ''; // empty
-	$menuItem->food_place_id = $data->food_place_id;
+if(!empty($data->food_place_id) && !empty($data->name) && !empty($data->price)) {
+    
+    $item->food_place_id = $data->food_place_id;
+    $item->item_name = $data->name;
+    $item->item_description = $data->description;
+    $item->price = $data->price;
+    // Default to 'Main' if category is missing
+    $item->category = !empty($data->category) ? $data->category : 'Main';
+    // Default to true (1) if missing
+    $item->is_available = isset($data->is_available) ? $data->is_available : 1;
 
-	// 7. CREATE
-	if ($menuItem->create())
-	{
-		http_response_code(201);
-		echo json_encode("Menu item created!");
-	}
-	else
-	{
-		http_response_code(503);
-		echo json_encode("Unable to create the item.");
-	}
+    if($item->create()) {
+        http_response_code(201);
+        echo json_encode("Menu Item Created.");
+    } else {
+        http_response_code(503);
+        echo json_encode("Creation failed.");
+    }
+} else {
+    http_response_code(400);
+    echo json_encode("Incomplete Data.");
 }
-else
-{
-	http_response_code(400);
-	echo json_encode("Incomplete data!\n");
-}
+?>
