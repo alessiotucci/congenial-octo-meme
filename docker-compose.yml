@@ -2,39 +2,57 @@
 #     File: docker-compose.yml                                                 #
 #     Author: atucci <atucci@student.42.fr>                                    #
 #     Created: 2026/01/25 17:58:47                                             #
-#     Updated: 2026/01/25 17:59:45                                             #
+#     Updated: 2026/02/02 16:49:46                                             #
 #     System: Linux [e4r3p4.42roma.it]                                         #
 #     Hardware: Intel Core i5-8600 | RAM: 15GB                                 #
 # **************************************************************************** #
 version: '3.8'
 
 services:
-  # SERVICE 1: The Database
+# SERVICE 1: The Database
   db:
-    image: mysql:5.7
+    # [IMPROVEMENT 1: Custom Build vs. Raw Image]
+    # OLD: image: mysql:5.7
+    # NEW: build: ...
+    # WHY: Instead of downloading a generic MySQL image and trying to "inject" 
+    # your SQL files via a fragile file-system link, we build a CUSTOM image.
+    # We COPY your schema/seed files directly inside the container during the build.
+    # This makes the "Stale file handle" error impossible because the files 
+    # become part of the container itself.
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
+
     container_name: food_db
     restart: always
+
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
     volumes:
-      # Persistent Storage
+      # [IMPROVEMENT 2: Simplified Volumes]
+      # We KEEP this volume to save your data (rows, users, orders).
+      # We REMOVED the link to "./db_schema/SQL" because those files are 
+      # now inside the image. This removes the dependency on your host OS
+      # file system (which was crashing on your university network/drive).
       - db_data:/var/lib/mysql
-      # AUTOMATIC SEEDING: Maps your SQL folder to the entrypoint
-      - ./db_schema/SQL:/docker-entrypoint-initdb.d
+
     networks:
       - food_net
+
+    # [IMPROVEMENT 3: Auth-Aware Healthcheck]
+    # The previous check failed because it didn't have the password.
+    # We added "-p${MYSQL_ROOT_PASSWORD}" so the robot can actually login 
+    # to check if the DB is alive.
     healthcheck:
-          # OLD (Broken): test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-          # NEW (Fixed): Authenticate using the root password
-          test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
-          interval: 10s
-          timeout: 5s
-          retries: 5
-          # Give it 30 seconds to import the seed.sql before we start complaining
-          start_period: 30s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # SERVICE 2: The Web App (PHP + Apache)
   app:
