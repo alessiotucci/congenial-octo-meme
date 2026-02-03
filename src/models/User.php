@@ -25,6 +25,7 @@ class User
 	{
 	$this->conn = $db;
 	}
+
 	public function create()
 	{
 	$query = ' INSERT INTO ' . $this->table . ' SET email = :email, password = :password, role = :role ';
@@ -46,7 +47,7 @@ class User
 
 	if ($stmt->execute())
 	{
-			printf("Success! Created the user!\n");
+			//printf("Success! Created the user!\n");
 			return ($this->conn->lastInsertId()); //FK (?)
 			//return (true);
 	}
@@ -58,7 +59,7 @@ class User
 	}
 
 	public function emailExists()
-	{
+	{	//TODO: SELECT * MIGHT BREAK
 	$query = 'SELECT *  FROM ' . $this->table . ' WHERE email = ? LIMIT 0,1';
 	$stmt = $this->conn->prepare($query);
 	$this->email = htmlspecialchars(strip_tags($this->email));

@@ -57,8 +57,8 @@ class DeliveryDriver
 
 		if ($stmt->execute())
 		{
-			printf("Success! Created the food delivery driver!\n");
-			return (true);
+			//printf("Success! Created the food delivery driver!\n");
+			return $this->conn->lastInsertId(); // Return ID instead
 		}
 		else
 		{

@@ -41,16 +41,21 @@ if (!empty($data->email) && !empty($data->password) && !empty($data->role))
 		}
 		else
 		{
-			if ($user->create())
-			{
-			http_response_code(201);
-			echo json_decode("User successfully created!"); //TODO now it works
-			}
-			else
-			{
-			http_response_code(503);
-			echo json_decode("Unable to create user.");
-			}
+		    $new_user_id = $user->create();
+		    if ($new_user_id)
+		    {
+		        http_response_code(201);
+		        $response_data = array(
+		            "message" => "User successfully created!",
+		            "id" => $new_user_id
+		        );
+		        echo json_encode($response_data);
+		    }
+		    else
+		    {
+		        http_response_code(503); // 503 Service Unavailable
+		        echo json_encode(array("message" => "Unable to create user."));
+		    }
 		}
 
 }

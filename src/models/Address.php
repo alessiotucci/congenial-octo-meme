@@ -69,7 +69,7 @@ class Address
 
 		if ($stmt->execute())
 		{
-			printf("Success! Created the address!\n");
+			//printf("Success! Created the address!\n");
 			return ($this->conn->lastInsertId()); // this is a FK!
 			//return (true);
 		}
