@@ -61,12 +61,13 @@ class Customer
 
 		if ($stmt->execute())
 		{
-			printf("Success! Created a customer!\n");
-			return(true);
+			//printf("Success! Created a customer!\n");
+			return ($this->conn->lastInsertId());
+			//return(true);
 		}
 		else
 		{
-			printf("Failure: error %s\n", $stmt->error);
+			//printf("Failure: error %s\n", $stmt->error);
 			return(false);
 		}
 	}

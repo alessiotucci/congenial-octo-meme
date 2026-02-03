@@ -1,333 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wheelie Good Food - Register</title>
-    
-    <!-- Bootstrap CSS for responsive grid and utilities -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts: Playfair Display (bold, elegant headlines) + Inter (clean body text) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <!-- ============================================================================
-         NAVIGATION BAR
-         ============================================================================
-         Simple, branded navbar with logo and navigation links -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#home">
-                <i class="fas fa-bicycle" style="color: #6B4BA0;"></i>
-                Wheelie<span class="text-primary">Good Food</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="ms-auto">
-                    <a class="nav-link" href="#home" onclick="resetToHome(event)">Home</a>
-                    <a class="nav-link active" href="#register">Register</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- ============================================================================
-         MAIN CONTENT
-         ============================================================================
-         Container for all views (Home, Registration Step 1, Registration Step 2) -->
-    <main class="main-content">
-        <div class="container">
-            <!-- ================================================================
-                 HOME VIEW
-                 ================================================================
-                 Initial landing page shown when page loads -->
-            <section id="view-home" class="view active">
-                <div class="row align-items-center justify-content-center min-vh-100">
-                    <div class="col-lg-6 col-md-8 text-center">
-                        <!-- Logo/Icon -->
-                        <div class="mb-4 hero-icon">
-                            <i class="fas fa-bicycle fa-5x" style="color: #6B4BA0;"></i>
-                        </div>
-                        
-                        <!-- Brand Title -->
-                        <h1 class="display-4 fw-bold mb-3">Wheelie<span class="text-primary">Good Food</span></h1>
-                        
-                        <!-- Tagline -->
-                        <p class="lead text-muted mb-5">
-                            Fair fees, fast delivery, honest work.<br>
-                            <span class="small">Whether you're hungry, building your business, or earning on your terms.</span>
-                        </p>
-                        
-                        <!-- CTA Button to Registration -->
-                        <button class="btn btn-lg btn-primary rounded-pill px-5 py-3" onclick="goToRegistration(event)">
-                            Get Started
-                            <i class="fas fa-arrow-right ms-2"></i>
-                        </button>
-                        
-                        <!-- Bottom Text -->
-                        <p class="text-muted mt-4 small">
-                            Already have an account? 
-                            <a href="#login" class="text-primary fw-bold">Sign in</a>
-                        </p>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Wheelie Good Food - Sign Up</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="#home">
+                    <i class="fas fa-bicycle" style="color: #6B4BA0;"></i>
+                    Wheelie
+                    <span class="text-primary">Good Food</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <div class="ms-auto">
+                        <a class="nav-link" href="#home" onclick="resetToHome(event)">Home</a>
+                        <a class="nav-link active" href="#register" onclick="goToRegistration(event)">Sign Up</a>
+                        <a class="nav-link" href="#login" onclick="goToLogin(event)">Log In</a>
                     </div>
                 </div>
-            </section>
+            </div>
+        </nav>
 
-            <!-- ================================================================
-                 REGISTRATION STEP 1: USER ACCOUNT CREATION
-                 ================================================================
-                 User enters email, password, and selects their role.
-                 Form changes color/icon/message based on selected role.
-                 
-                 DYNAMIC ELEMENTS:
-                 - Role dropdown changes: gradient color, welcome message, icon -->
-            <section id="view-registration-step1" class="view hidden">
-                <div class="row align-items-center justify-content-center min-vh-100">
-                    <div class="col-lg-5 col-md-8">
-                        <!-- Card Container with dynamic class for role-based styling -->
-                        <div class="registration-card" id="registrationCard" data-role="customer">
-                            
-                            <!-- Close / Back Button -->
-                            <button class="btn-close-custom" onclick="resetToHome(event)" title="Back to Home">
-                                <i class="fas fa-times"></i>
-                            </button>
-
-                            <!-- ========== HEADER SECTION ==========
-                                 Contains role icon, welcome message, role name -->
-                            <div class="registration-header">
-                                <!-- Dynamic Icon based on selected role -->
-                                <div class="role-icon-container">
-                                    <i id="roleIcon" class="fas fa-user-tie fa-3x"></i>
-                                </div>
-                                
-                                <!-- Role Badge (displays selected role) -->
-                                <span class="role-badge" id="roleBadge">Customer</span>
-                                
-                                <!-- Dynamic Welcome Message based on selected role -->
-                                <h2 id="welcomeMessage" class="welcome-text">
-                                    Tired of unfair delivery fees?
-                                </h2>
-                                <p id="welcomeSubtext" class="welcome-subtext">
-                                    Join thousands eating better, paying less.
-                                </p>
+        <main class="main-content">
+            <div class="container">
+                
+                <section id="view-home" class="view active">
+                    <div class="row align-items-center justify-content-center min-vh-100">
+                        <div class="col-lg-6 col-md-8 text-center">
+                            <div class="mb-4 hero-icon">
+                                <i class="fas fa-bicycle fa-5x" style="color: #6B4BA0;"></i>
                             </div>
+                            <h1 class="display-4 fw-bold mb-3">Wheelie <span class="text-primary">Good Food</span></h1>
+                            <p class="lead text-muted mb-5">
+                                Fair fees, fast delivery, honest work.
+                                <br>
+                                <span class="small">Whether you're hungry, building your business, or earning on your terms.</span>
+                            </p>
+                            
+                            <button class="btn btn-lg btn-primary rounded-pill px-5 py-3" onclick="goToRegistration(event)">
+                                Create Account
+                                <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                            
+                            <p class="text-muted mt-4 small">
+                                Already have an account?
+								<a class="nav-link d-inline text-primary fw-bold p-0" href="#" onclick="goToLogin(event)">Log In</a>
+							</p>
+                        </div>
+                    </div>
+                </section>
 
-                            <!-- ========== FORM SECTION ==========
-                                 Email, Password, Role Dropdown -->
-                            <form id="registrationForm" onsubmit="handleStep1Submit(event)">
-                                
-                                <!-- EMAIL INPUT -->
-                                <div class="form-group mb-4">
-                                    <label for="email" class="form-label">
-                                        <i class="fas fa-envelope me-2"></i>Email Address
-                                    </label>
-                                    <input 
-                                        type="email" 
-                                        class="form-control form-control-lg" 
-                                        id="email" 
-                                        name="email" 
-                                        placeholder="mario.rossi@gmail.com" 
-                                        required
-                                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                                        title="Please enter a valid email address"
-                                    >
-                                    <small class="form-text text-muted">We'll never share your email.</small>
-                                </div>
-
-                                <!-- PASSWORD INPUT -->
-                                <div class="form-group mb-4">
-                                    <label for="password" class="form-label">
-                                        <i class="fas fa-lock me-2"></i>Password
-                                    </label>
-                                    <div class="position-relative">
-                                        <input 
-                                            type="password" 
-                                            class="form-control form-control-lg" 
-                                            id="password" 
-                                            name="password" 
-                                            placeholder="Create a strong password" 
-                                            required
-                                            minlength="8"
-                                            title="Password must be at least 8 characters"
-                                        >
-                                        <!-- Toggle Password Visibility Button -->
-                                        <button 
-                                            type="button" 
-                                            class="btn-toggle-password" 
-                                            onclick="togglePasswordVisibility()"
-                                            title="Show/Hide Password"
-                                        >
-                                            <i class="fas fa-eye" id="toggleIcon"></i>
-                                        </button>
-                                    </div>
-                                    <small class="form-text text-muted">At least 8 characters for security.</small>
-                                </div>
-
-                                <!-- ROLE SELECTION DROPDOWN -->
-                                <!-- 
-                                    This is the KEY element!
-                                    When user changes the dropdown:
-                                    - Card changes color (gradient)
-                                    - Icon changes
-                                    - Welcome message changes
-                                    - Role badge updates
-                                    
-                                    The "onchange" event triggers updateRoleDisplay() function
-                                -->
-                                <div class="form-group mb-5">
-                                    <label for="role" class="form-label">
-                                        <i class="fas fa-crown me-2"></i>Choose Your Role
-                                    </label>
-                                    <select 
-                                        class="form-select form-select-lg" 
-                                        id="role" 
-                                        name="role"
-                                        onchange="updateRoleDisplay(this.value)"
-                                        required
-                                    >
-                                        <!-- Option 1: Customer (Default) -->
-                                        <option value="customer" selected>
-                                            🛵 Customer - Order Food Affordably
-                                        </option>
-                                        <!-- Option 2: Food Place / Restaurant -->
-                                        <option value="food_place">
-                                            🍕 Food Place - Grow Your Business
-                                        </option>
-                                        <!-- Option 3: Delivery Driver / Rider -->
-                                        <option value="rider">
-                                            🚴 Delivery Driver - Earn on Your Terms
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <!-- ========== SUBMIT BUTTON ==========
-                                     Changes color based on role (via CSS class) -->
-                                <button 
-                                    type="submit" 
-                                    class="btn btn-lg w-100 rounded-pill btn-role" 
-                                    id="submitBtn"
-                                >
-                                    Create Account
-                                    <i class="fas fa-arrow-right ms-2"></i>
+                <section id="view-registration-step1" class="view hidden">
+                    <div class="row align-items-center justify-content-center min-vh-100">
+                        <div class="col-lg-5 col-md-8">
+                            <div class="registration-card" id="registrationCard" data-role="customer">
+                                <button class="btn-close-custom" onclick="resetToHome(event)" title="Back to Home">
+                                    <i class="fas fa-times"></i>
                                 </button>
-
-                                <!-- Bottom Text: Link to Login -->
-                                <p class="text-center mt-4 text-muted">
-                                    Already have an account? 
-                                    <a href="#login" class="fw-bold" style="text-decoration: none;">Sign in</a>
-                                </p>
-                            </form>
-
-                            <!-- ========== PROGRESS INDICATOR ==========
-                                 Shows user they're on Step 1 of 2 -->
-                            <div class="progress-indicator">
-                                <span class="step active">1</span>
-                                <span class="step">2</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ================================================================
-                 REGISTRATION STEP 2: ENTITY CREATION (Placeholder)
-                 ================================================================
-                 After Step 1 succeeds, this view will show forms for:
-                 - Customer: Name, Phone, Address
-                 - Food Place: Restaurant Name, Address, Cuisine Type
-                 - Driver: Name, Phone, Vehicle Type, License
-                 
-                 For now, we'll show a placeholder confirming Step 1 completion -->
-            <section id="view-registration-step2" class="view hidden">
-                <div class="row align-items-center justify-content-center min-vh-100">
-                    <div class="col-lg-5 col-md-8">
-                        <div class="registration-card registration-card-step2" id="step2Card" data-role="customer">
-                            
-                            <!-- Close / Back Button -->
-                            <button class="btn-close-custom" onclick="backToStep1(event)" title="Back to Step 1">
-                                <i class="fas fa-arrow-left"></i>
-                            </button>
-
-                            <!-- Success Message -->
-                            <div class="registration-header text-center">
-                                <div class="success-checkmark">
-                                    <i class="fas fa-check-circle fa-4x"></i>
+                                
+                                <div class="registration-header">
+                                    <div class="role-icon-container">
+                                        <i id="roleIcon" class="fas fa-user-tie fa-3x"></i>
+                                    </div>
+                                    <span class="role-badge" id="roleBadge">Customer</span>
+                                    <h2 id="welcomeMessage" class="welcome-text">Tired of unfair delivery fees?</h2>
+                                    <p id="welcomeSubtext" class="welcome-subtext">Join thousands eating better, paying less.</p>
                                 </div>
-                                <h2 class="mt-4">Account Created!</h2>
-                                <p class="lead text-muted">
-                                    Now let's set up your profile
-                                </p>
-                            </div>
-
-                            <!-- Placeholder for Step 2 Form -->
-                            <div id="step2FormContainer" class="mt-5">
-                                <!-- This will be populated based on role selection -->
-                                <p class="alert alert-info text-center">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Step 2 form will load here based on your role selection.
-                                </p>
-                            </div>
-
-                            <!-- Progress Indicator -->
-                            <div class="progress-indicator">
-                                <span class="step">1</span>
-                                <span class="step active">2</span>
+                                
+                                <form id="registrationForm" onsubmit="handleStep1Submit(event)">
+                                    <div class="form-group mb-4">
+                                        <label for="email" class="form-label"><i class="fas fa-envelope me-2"></i>Email Address</label>
+                                        <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="mario.rossi@gmail.com" required>
+                                        <small class="form-text text-muted">We'll never share your email.</small>
+                                    </div>
+                                    
+                                    <div class="form-group mb-4">
+                                        <label for="password" class="form-label"><i class="fas fa-lock me-2"></i>Password</label>
+                                        <div class="position-relative">
+                                            <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Create a strong password" required minlength="8">
+                                            <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility()">
+                                                <i class="fas fa-eye" id="toggleIcon"></i>
+                                            </button>
+                                        </div>
+                                        <small class="form-text text-muted">At least 8 characters for security.</small>
+                                    </div>
+                                    
+                                    <div class="form-group mb-5">
+                                        <label for="role" class="form-label"><i class="fas fa-crown me-2"></i>Choose Your Role</label>
+                                        <select class="form-select form-select-lg" id="role" name="role" onchange="updateRoleDisplay(this.value)" required>
+                                            <option value="customer" selected>🛵 Customer - Order Food Affordably</option>
+                                            <option value="food_place">🍕 Food Place - Grow Your Business</option>
+                                            <option value="rider">🚴 Delivery Driver - Earn on Your Terms</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-lg w-100 rounded-pill btn-role" id="submitBtn">
+                                        Create Account <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                    
+                                    <p class="text-center mt-4 text-muted">
+                                        Already have an account?
+										<a href="#" class="text-primary fw-bold" onclick="goToLogin(event)">Log In</a>
+									</p>
+                                </form>
+                                
+                                <div class="progress-indicator">
+                                    <span class="step active">1</span>
+                                    <span class="step">2</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-        </div>
-    </main>
+                <section id="view-registration-step2" class="view hidden">
+                    <div class="row align-items-center justify-content-center min-vh-100">
+                        <div class="col-lg-5 col-md-8">
+                            <div class="registration-card registration-card-step2" id="step2Card" data-role="customer">
+                                <button class="btn-close-custom" onclick="backToStep1(event)" title="Back to Step 1">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                
+                                <div class="registration-header text-center">
+                                    <div class="success-checkmark"><i class="fas fa-check-circle fa-4x"></i></div>
+                                    <h2 class="mt-4">Account Created!</h2>
+                                    <p class="lead text-muted">Now let's set up your profile</p>
+                                </div>
+                                
+                                <div id="step2FormContainer" class="mt-5">
+                                    <p class="alert alert-info text-center">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Step 2 form will load here based on your role selection.
+                                    </p>
+                                </div>
+                                
+                                <div class="progress-indicator">
+                                    <span class="step">1</span>
+                                    <span class="step active">2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
-    <!-- ============================================================================
-         FOOTER
-         ============================================================================ -->
-    <footer class="footer mt-auto">
-        <div class="container">
-            <div class="row text-center text-md-start">
-                <div class="col-md-4 mb-3">
-                    <h5>Wheelie Good Food</h5>
-                    <p class="small text-muted">Fair fees. Fast delivery. Honest work.</p>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled small">
-                        <li><a href="#home" class="text-decoration-none" onclick="resetToHome(event)">Home</a></li>
-                        <li><a href="#register" class="text-decoration-none" onclick="goToRegistration(event)">Register</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <h5>Legal</h5>
-                    <ul class="list-unstyled small">
-                        <li><a href="#" class="text-decoration-none">Terms of Service</a></li>
-                        <li><a href="#" class="text-decoration-none">Privacy Policy</a></li>
-                    </ul>
+			<div id="view-login" class="view-section d-none">
+                <div class="row justify-content-center mt-5">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body p-4">
+                                <h3 class="text-center mb-4">Welcome Back</h3>
+                                <form onsubmit="handleLogin(event)">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" id="loginEmail" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Password</label>
+                                        <input type="password" id="loginPassword" class="form-control" required>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">Log In</button>
+                                    </div>
+                                </form>
+                                <div class="text-center mt-3">
+                                    <small class="text-muted">Don't have an account?</small>
+                                    <br>
+                                    <button class="btn btn-link btn-sm" onclick="switchView('view-registration-step1')">
+                                        Create Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <hr>
-            <p class="text-center text-muted small mb-0">
-                &copy; 2026 Wheelie Good Food. All rights reserved.
-            </p>
-        </div>
-    </footer>
 
-    <!-- Bootstrap JS (for dropdowns, modals, etc.) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JavaScript -->
-    <script src="js/app.js"></script>
-</body>
+            <div id="view-dashboard" class="view-section d-none">
+                <div id="dashboardContent"></div>
+            </div>
+        </main>
+
+        <footer class="footer mt-auto">
+            <div class="container">
+                <div class="row text-center text-md-start">
+                    <div class="col-md-4 mb-3">
+                        <h5>Wheelie Good Food</h5>
+                        <p class="small text-muted">Fair fees. Fast delivery. Honest work.</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h5>Quick Links</h5>
+                        <ul class="list-unstyled small">
+                            <li><a href="#home" class="text-decoration-none" onclick="resetToHome(event)">Home</a></li>
+                            <li><a href="#register" class="text-decoration-none" onclick="goToRegistration(event)">Sign Up</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h5>Legal</h5>
+                        <ul class="list-unstyled small">
+                            <li><a href="#" class="text-decoration-none">Terms of Service</a></li>
+                            <li><a href="#" class="text-decoration-none">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <hr>
+                <p class="text-center text-muted small mb-0">&copy; 2026 Wheelie Good Food. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/app.js"></script>
+    </body>
 </html>
