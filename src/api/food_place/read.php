@@ -32,14 +32,15 @@ if($num > 0)
 	while($row = $result->fetch(PDO::FETCH_ASSOC))
 	{
 		extract($row);
-		$place_item = array(
-			'id' => $id,
-			'name' => $name,
-			'type' => $food_type,
-			'rating' => $average_rating,
-			'location (city + address1)' => $city . ', ' . $address_line1
-			//TODO: Combined for easy display
-		);
+        $place_item = array(
+            'id' => $id,
+            'name' => $name,
+            'type' => $food_type,
+            'rating' => $average_rating,
+            // CLEANER KEY NAME:
+            'location' => $city . ', ' . $address_line1,
+            'description' => $description // Added description for the UI
+        );
 		array_push($places_arr['data'], $place_item);
 	}
 	http_response_code(200);

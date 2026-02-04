@@ -32,53 +32,89 @@ class Address
 	public $postal_code;
 	public $country_id;
 
+	public $customer_id; // Passed from frontend, used for filtering via the junction table
+
 	// constructor
 	public function __construct($db)
 	{
 		$this->conn = $db;
 	}
-	//functions
-	public function create()
-	{
-		$query = 'INSERT INTO ' . $this->table . ' (unit_number, street_number,
-		  address_line1, address_line2, city,  region, postal_code, country_id)
-		 VALUES (:unit_number, :street_number,
-		  :address_line1, :address_line2, :city, :region, :postal_code, :country_id)';
 
-		$stmt = $this->conn->prepare($query);
+	// ------------------------------------------------------------------
+    // 1. CREATE (Transactional: Address + Link)
+    // ------------------------------------------------------------------
+    public function create()
+    {
+        try {
+            // A. START TRANSACTION
+            // We turn off auto-commit. Everything below must succeed, or we roll back.
+            $this->conn->beginTransaction();
 
-		// this will clean the input
-		$this->unit_number = htmlspecialchars(strip_tags($this->unit_number));
-		$this->street_number = htmlspecialchars(strip_tags($this->street_number));
-		$this->address_line1 = htmlspecialchars(strip_tags($this->address_line1));
-		$this->address_line2 = htmlspecialchars(strip_tags($this->address_line2));
-		$this->city = htmlspecialchars(strip_tags($this->city));
-		$this->region = htmlspecialchars(strip_tags($this->region));
-		$this->postal_code = htmlspecialchars(strip_tags($this->postal_code));
-		$this->country_id = htmlspecialchars(strip_tags($this->country_id));
+            // B. INSERT INTO ADDRESS TABLE
+            $query = 'INSERT INTO ' . $this->table . ' 
+                      (unit_number, street_number, address_line1, address_line2, 
+                       city, region, postal_code, country_id)
+                      VALUES 
+                      (:unit_number, :street_number, :address_line1, :address_line2, 
+                       :city, :region, :postal_code, :country_id)';
 
-		// Binding the param, telling the PDO use the real value
-		$stmt->bindParam(':unit_number', $this->unit_number);
-		$stmt->bindParam(':street_number', $this->street_number);
-		$stmt->bindParam(':address_line1', $this->address_line1);
-		$stmt->bindParam(':address_line2', $this->address_line2);
-		$stmt->bindParam(':city', $this->city);
-		$stmt->bindParam(':region', $this->region);
-		$stmt->bindParam(':postal_code', $this->postal_code);
-		$stmt->bindParam(':country_id', $this->country_id);
+            $stmt = $this->conn->prepare($query);
 
-		if ($stmt->execute())
-		{
-			//printf("Success! Created the address!\n");
-			return ($this->conn->lastInsertId()); // this is a FK!
-			//return (true);
-		}
-		else
-		{
-			printf("Error! Failed: %s\n", $stmt->error);
-			return (false);
-		}
-	}
+            // Sanitize
+            $this->unit_number = htmlspecialchars(strip_tags($this->unit_number));
+            $this->street_number = htmlspecialchars(strip_tags($this->street_number));
+            $this->address_line1 = htmlspecialchars(strip_tags($this->address_line1));
+            $this->address_line2 = htmlspecialchars(strip_tags($this->address_line2));
+            $this->city = htmlspecialchars(strip_tags($this->city));
+            $this->region = htmlspecialchars(strip_tags($this->region));
+            $this->postal_code = htmlspecialchars(strip_tags($this->postal_code));
+            $this->country_id = htmlspecialchars(strip_tags($this->country_id));
+
+            // Bind
+            $stmt->bindParam(':unit_number', $this->unit_number);
+            $stmt->bindParam(':street_number', $this->street_number);
+            $stmt->bindParam(':address_line1', $this->address_line1);
+            $stmt->bindParam(':address_line2', $this->address_line2);
+            $stmt->bindParam(':city', $this->city);
+            $stmt->bindParam(':region', $this->region);
+            $stmt->bindParam(':postal_code', $this->postal_code);
+            $stmt->bindParam(':country_id', $this->country_id);
+
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to insert into Address table: " . implode(" ", $stmt->errorInfo()));
+            }
+
+            // GET THE NEW ID
+            $this->id = $this->conn->lastInsertId();
+
+
+            // C. INSERT INTO CROSS REFERENCE TABLE (customer_address)
+            // //TODO: USE THE CROSS REFERENCE TABLE INSTEAD
+            $linkQuery = 'INSERT INTO customer_address (customer_id, address_id) VALUES (:cust_id, :addr_id)';
+            $linkStmt = $this->conn->prepare($linkQuery);
+
+            $this->customer_id = htmlspecialchars(strip_tags($this->customer_id));
+            
+            $linkStmt->bindParam(':cust_id', $this->customer_id);
+            $linkStmt->bindParam(':addr_id', $this->id);
+
+            if (!$linkStmt->execute()) {
+                throw new Exception("Failed to link address to customer.");
+            }
+
+            // D. COMMIT TRANSACTION
+            // If we got here, both inserts worked. Save changes.
+            $this->conn->commit();
+            return $this->id;
+
+        } catch (Exception $e) {
+            // E. ROLLBACK ON FAILURE
+            // If anything failed, undo the first insert too. No orphans allowed.
+            $this->conn->rollBack();
+            // printf("Error: %s.\n", $e->getMessage()); // Uncomment for debugging
+            return false;
+        }
+    }
 
 //paste it here
 // 2. READ (Get All - rarely used for addresses, but good to have)
@@ -182,5 +218,26 @@ public function delete()
 	}
 	return false;
 }
+
+public function read_by_customer()
+    {
+		$query = 'SELECT 
+		ca.id as id, -- <--- THIS IS THE FIX. We grab the Link ID, not the Address ID.
+		a.address_line1, 
+		a.address_line2, 
+		a.city, 
+		a.postal_code 
+	  FROM ' . $this->table . ' a
+	  JOIN customer_address ca ON a.id = ca.address_id
+	  WHERE ca.customer_id = :customer_id
+	  ORDER BY ca.id DESC'; // Ordered by Link ID
+
+        $stmt = $this->conn->prepare($query);
+        $this->customer_id = htmlspecialchars(strip_tags($this->customer_id));
+        $stmt->bindParam(':customer_id', $this->customer_id);
+        $stmt->execute();
+        return $stmt;
+    }
+
 }
 ?>

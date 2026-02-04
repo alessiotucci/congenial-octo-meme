@@ -50,12 +50,12 @@ if(
 	else
 	{
 		http_response_code(503);
-		echo json_encode("Unable to place order. Transaction failed.");
+		echo json_encode(array("message" => "Unable to place order. Transaction failed."));
 	}
 }
 else
 {
 	http_response_code(400);
-	echo json_encode("Incomplete Data. Items array required.");
+	echo json_encode(array("message" => "Incomplete Data. Items array required."));
 }
 ?>

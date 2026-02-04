@@ -131,6 +131,18 @@ async function checkSession()
             currentState.userId = data.user_id;
             currentState.userRole = data.role;
             currentState.csrfToken = data.csrf_token;
+
+		if (data.entity_id)
+		{
+			currentState.entityId = data.entity_id;
+			console.log("🔗 Entity Link Restored:", currentState.entityId);
+		}
+		else
+		{
+			alert("missing the id! fuck");
+			console.warn("⚠️ Session active, but Entity ID missing.");
+		}
+
             showDashboard(data.role);
         }
 		else

@@ -109,7 +109,7 @@ class FoodPlace
 		try
 		{
 		  $query = 'SELECT 
-              p.id, p.user_id, p.name, p.food_type, p.average_rating,
+              p.id, p.user_id, p.name, p.food_type, p.average_rating, p.description,
               a.address_line1, a.city, a.country_id
             FROM ' . $this->table . ' p
             LEFT JOIN address a ON p.address_id = a.id

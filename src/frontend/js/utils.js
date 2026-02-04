@@ -149,3 +149,87 @@ function goToLogin(event)
 		event.preventDefault();
     switchView('view-login');
 }
+
+/* ============================================================================
+   CART MANAGEMENT (LocalStorage)
+   ============================================================================ */
+   const CART_KEY = 'wheelie_cart';
+
+   const cartManager = {
+	   // 1. GET CART
+	   get: () => {
+		   const stored = localStorage.getItem(CART_KEY);
+		   return stored ? JSON.parse(stored) : { restaurantId: null, restaurantName: null, items: [] };
+	   },
+   
+	   // 2. SAVE CART
+	   save: (cart) => {
+		   localStorage.setItem(CART_KEY, JSON.stringify(cart));
+		   // Trigger a custom event so the UI updates immediately
+		   document.dispatchEvent(new Event('cartUpdated'));
+	   },
+   
+	   // 3. ADD ITEM (The Smart Logic)
+	   add: (item, restaurantId, restaurantName) => {
+		   let cart = cartManager.get();
+   
+		   // CONFLICT CHECK: Are we ordering from a different restaurant?
+		   if (cart.restaurantId && cart.restaurantId != restaurantId) {
+			   if (!confirm(`Your cart contains items from "${cart.restaurantName}". Discard them to order from "${restaurantName}"?`)) {
+				   return false; // User cancelled
+			   }
+			   cart = { restaurantId: null, items: [] }; // Reset
+		   }
+   
+		   // Initialize if empty
+		   if (!cart.restaurantId) {
+			   cart.restaurantId = restaurantId;
+			   cart.restaurantName = restaurantName;
+		   }
+   
+		   // CHECK DUPLICATES: Do we already have this item?
+		   const existingItem = cart.items.find(i => i.id === item.id);
+		   if (existingItem) {
+			   existingItem.quantity += 1; // Increment
+		   } else {
+			   cart.items.push({ ...item, quantity: 1 }); // Add new
+		   }
+   
+		   cartManager.save(cart);
+		   return true;
+	   },
+   
+	   // 4. REMOVE ITEM (Decrease qty or delete)
+	   remove: (itemId) => {
+		   let cart = cartManager.get();
+		   const index = cart.items.findIndex(i => i.id === itemId);
+		   
+		   if (index !== -1) {
+			   if (cart.items[index].quantity > 1) {
+				   cart.items[index].quantity -= 1;
+			   } else {
+				   cart.items.splice(index, 1);
+			   }
+		   }
+		   
+		   // If cart is empty, clear the restaurant link
+		   if (cart.items.length === 0) {
+			   cart.restaurantId = null;
+			   cart.restaurantName = null;
+		   }
+		   
+		   cartManager.save(cart);
+	   },
+   
+	   // 5. CLEAR
+	   clear: () => {
+		   localStorage.removeItem(CART_KEY);
+		   document.dispatchEvent(new Event('cartUpdated'));
+	   },
+	   
+	   // 6. CALCULATE TOTAL
+	   getTotal: () => {
+		   const cart = cartManager.get();
+		   return cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+	   }
+   };

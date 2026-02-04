@@ -27,6 +27,14 @@ class FoodOrder
 	public $order_status_id;
 	public $order_datetime;
 
+	// Public property to hold items when reading a single order
+    public $items_list = []; 
+    public $restaurant_name;
+    public $status_name;
+
+	public $assigned_driver_id;
+
+
 	public function __construct($db)
 	{
 		$this->conn = $db;
@@ -140,5 +148,93 @@ class FoodOrder
 			return false;
 		}
 	}
+	// ------------------------------------------------------------------
+    // 2. READ HISTORY (List of Orders for a Customer)
+    // ------------------------------------------------------------------
+    public function read_by_customer()
+    {
+        // We JOIN 'food_place' to show the Restaurant Name
+        // We JOIN 'order_status' to show "Delivered" instead of "4"
+        $query = 'SELECT 
+                    o.id, 
+                    o.total_amount, 
+                    o.order_datetime, 
+                    o.order_status_id,
+                    fp.name as restaurant_name,
+                    os.status_value
+                  FROM ' . $this->table . ' o
+                  JOIN food_place fp ON o.food_place_id = fp.id
+                  JOIN order_status os ON o.order_status_id = os.id
+                  WHERE o.customer_id = :id
+                  ORDER BY o.order_datetime DESC';
+
+        $stmt = $this->conn->prepare($query);
+        $this->customer_id = htmlspecialchars(strip_tags($this->customer_id));
+        $stmt->bindParam(':id', $this->customer_id);
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    // ------------------------------------------------------------------
+    // 3. READ SINGLE (Detailed View with Items)
+    // ------------------------------------------------------------------
+    public function read_single()
+    {
+        $query = 'SELECT 
+                    o.id, 
+                    o.total_amount, 
+                    o.order_datetime, 
+                    o.order_status_id,
+                    o.assigned_driver_id,
+                    fp.name as restaurant_name,
+                    os.status_value
+                  FROM ' . $this->table . ' o
+                  JOIN food_place fp ON o.food_place_id = fp.id
+                  JOIN order_status os ON o.order_status_id = os.id
+                  WHERE o.id = ?
+                  LIMIT 0,1';
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $this->id);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $this->id = $row['id'];
+            $this->total_amount = $row['total_amount'];
+            $this->order_datetime = $row['order_datetime'];
+            $this->order_status_id = $row['order_status_id'];
+            $this->status_name = $row['status_value'];
+            $this->restaurant_name = $row['restaurant_name'];
+            $this->assigned_driver_id = $row['assigned_driver_id'];
+
+            // CRITICAL: Fetch the items list automatically
+            $this->get_order_items();
+            return true;
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------------------
+    // PRIVATE HELPER: FETCH ITEMS
+    // ------------------------------------------------------------------
+    private function get_order_items()
+    {
+        $query = 'SELECT 
+                    oi.quantity, 
+                    oi.price as price_at_order, 
+                    mi.item_name 
+                  FROM ' . $this->table_items . ' oi
+                  JOIN menu_item mi ON oi.menu_item_id = mi.id
+                  WHERE oi.order_id = :oid';
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':oid', $this->id);
+        $stmt->execute();
+
+        $this->items_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>
