@@ -25,9 +25,12 @@ if(!empty($data->id) && !empty($data->status_id)) {
     $order->id = $data->id;
     $order->order_status_id = $data->status_id;
 
-    if($order->updateStatus()) {
+    if($order->updateStatus())
+	{
         echo json_encode("Order status updated.");
-    } else {
+    }
+	else
+	{
         http_response_code(503);
         echo json_encode("Could not update status.");
     }

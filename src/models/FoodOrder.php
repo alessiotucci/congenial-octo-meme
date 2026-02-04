@@ -236,5 +236,200 @@ class FoodOrder
 
         $this->items_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+	// Inside models/FoodOrder.php
+
+    // ------------------------------------------------------------------
+    // READ INCOMING ORDERS (For the Kitchen Dashboard)
+    // ------------------------------------------------------------------
+    public function read_incoming_orders()
+    {
+        // 1. Get the Order Headers (Status < 4 means not delivered yet)
+        $query = "SELECT 
+                    o.id, 
+                    o.total_amount, 
+                    o.order_datetime, 
+                    o.order_status_id,
+                    c.first_name, 
+                    c.last_name,
+                    os.status_value
+                  FROM " . $this->table . " o
+                  JOIN customer c ON o.customer_id = c.id
+                  JOIN order_status os ON o.order_status_id = os.id
+                  WHERE o.food_place_id = :fid 
+                  AND o.order_status_id < 4
+                  ORDER BY o.order_datetime ASC";
+
+        $stmt = $this->conn->prepare($query);
+        $this->food_place_id = htmlspecialchars(strip_tags($this->food_place_id));
+        $stmt->bindParam(':fid', $this->food_place_id);
+        $stmt->execute();
+
+        $orders = [];
+
+        // 2. Loop through orders and attach Items
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $row['items'] = $this->get_items_for_order($row['id']);
+            $orders[] = $row;
+        }
+
+        return $orders;
+    }
+
+    // Private helper to avoid code duplication
+    private function get_items_for_order($order_id)
+    {
+        $qItems = "SELECT quantity, mi.item_name 
+                   FROM " . $this->table_items . " oi
+                   JOIN menu_item mi ON oi.menu_item_id = mi.id
+                   WHERE oi.order_id = :oid";
+        
+        $stmtI = $this->conn->prepare($qItems);
+        $stmtI->bindParam(':oid', $order_id);
+        $stmtI->execute();
+        
+        return $stmtI->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+	
+
+    // ------------------------------------------------------------------
+    // STATE MACHINE: Update Status (e.g., Picked Up, Delivered)
+    // ------------------------------------------------------------------
+    public function updateStatus()
+    {
+        $query = 'UPDATE ' . $this->table . ' 
+                  SET order_status_id = :status 
+                  WHERE id = :id';
+
+        $stmt = $this->conn->prepare($query);
+
+        $this->order_status_id = htmlspecialchars(strip_tags($this->order_status_id));
+        $this->id = htmlspecialchars(strip_tags($this->id));
+
+        $stmt->bindParam(':status', $this->order_status_id);
+        $stmt->bindParam(':id', $this->id);
+
+        if($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------------------
+    // STATE MACHINE: Cancel Order (Soft Cancel)
+    // ------------------------------------------------------------------
+    public function cancelOrder()
+    {
+        // We force status to 5 (Cancelled)
+        $query = 'UPDATE ' . $this->table . ' 
+                  SET order_status_id = 5, assigned_driver_id = NULL 
+                  WHERE id = :id';
+
+        $stmt = $this->conn->prepare($query);
+        $this->id = htmlspecialchars(strip_tags($this->id));
+        $stmt->bindParam(':id', $this->id);
+
+        if($stmt->execute())
+		{
+            return true;
+        }
+        return false;
+    }
+
+
+	// ------------------------------------------------------------------
+    // DRIVER: READ AVAILABLE & ACTIVE JOBS (Pool + My Mission)
+    // ------------------------------------------------------------------
+    public function read_for_driver($driver_id)
+    {
+        // We need 4 JOINS to get: Restaurant Name, Customer Name, and Physical Address
+        $query = "SELECT 
+                    o.id, 
+                    o.delivery_fee, 
+                    o.assigned_driver_id,
+                    o.total_amount,
+                    fp.name as restaurant_name,
+                    c.first_name, c.last_name,
+                    a.address_line1, a.city,
+                    -- Subquery to count items without grouping/breaking rows
+                    (SELECT COUNT(*) FROM " . $this->table_items . " WHERE order_id = o.id) as item_count
+                  FROM " . $this->table . " o
+                  JOIN food_place fp ON o.food_place_id = fp.id
+                  JOIN customer c ON o.customer_id = c.id
+                  -- JOIN to get the address ID
+                  JOIN customer_address ca ON o.customer_address_id = ca.id
+                  -- JOIN to get the actual text
+                  JOIN address a ON ca.address_id = a.id
+                  WHERE 
+                    -- Scenario A: Ready (3) AND Unassigned (Pool)
+                    (o.order_status_id = 3 AND o.assigned_driver_id IS NULL)
+                    OR 
+                    -- Scenario B: Ready (3) AND Assigned to ME (Active Job)
+                    (o.order_status_id = 3 AND o.assigned_driver_id = :did)
+                  ORDER BY o.order_datetime ASC";
+
+        $stmt = $this->conn->prepare($query);
+        $driver_id = htmlspecialchars(strip_tags($driver_id));
+        $stmt->bindParam(':did', $driver_id);
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    // ------------------------------------------------------------------
+    // DRIVER: READ HISTORY (Delivered Orders)
+    // ------------------------------------------------------------------
+    public function read_driver_history($driver_id)
+    {
+        $query = "SELECT 
+                    o.id, 
+                    o.delivery_fee, 
+                    o.order_datetime,
+                    fp.name as restaurant_name,
+                    c.first_name, c.last_name
+                  FROM " . $this->table . " o
+                  JOIN food_place fp ON o.food_place_id = fp.id
+                  JOIN customer c ON o.customer_id = c.id
+                  WHERE 
+                    o.assigned_driver_id = :did 
+                    AND o.order_status_id = 4 -- Delivered
+                  ORDER BY o.order_datetime DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $driver_id = htmlspecialchars(strip_tags($driver_id));
+        $stmt->bindParam(':did', $driver_id);
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    // ------------------------------------------------------------------
+    // DRIVER: ASSIGN SELF (Accept Job)
+    // ------------------------------------------------------------------
+    public function assignDriver()
+    {
+        // We add "AND assigned_driver_id IS NULL" to prevent Race Conditions.
+        // If two drivers click "Accept" at the same time, the second one will fail.
+        $query = 'UPDATE ' . $this->table . ' 
+                  SET assigned_driver_id = :did 
+                  WHERE id = :id AND assigned_driver_id IS NULL';
+
+        $stmt = $this->conn->prepare($query);
+        
+        $this->assigned_driver_id = htmlspecialchars(strip_tags($this->assigned_driver_id));
+        $this->id = htmlspecialchars(strip_tags($this->id));
+
+        $stmt->bindParam(':did', $this->assigned_driver_id);
+        $stmt->bindParam(':id', $this->id);
+
+        if($stmt->execute()) {
+            // Check if any row was actually updated
+            if($stmt->rowCount() > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 ?>

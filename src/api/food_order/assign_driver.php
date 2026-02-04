@@ -22,18 +22,23 @@ $order = new FoodOrder($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-if(!empty($data->id) && !empty($data->driver_id)) {
+if(!empty($data->id) && !empty($data->driver_id))
+{
+    
     $order->id = $data->id;
     $order->assigned_driver_id = $data->driver_id;
 
-    if($order->assignDriver()) {
-        echo json_encode("Driver assigned. Order status updated to Confirmed (2).");
+    if($order->assignDriver())
+	{
+        http_response_code(200);
+        echo json_encode(["message" => "Job Accepted! Drive safe."]);
     } else {
-        http_response_code(503);
-        echo json_encode("Could not assign driver.");
+        // This happens if the job was already taken by someone else
+        http_response_code(409); // Conflict
+        echo json_encode(["message" => "Job unavailable. It may have been taken."]);
     }
 } else {
     http_response_code(400);
-    echo json_encode("Missing Order ID or Driver ID.");
+    echo json_encode(["message" => "Incomplete Data."]);
 }
 ?>
