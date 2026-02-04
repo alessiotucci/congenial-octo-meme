@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Wheelie Good Food - Sign Up</title>
+        <title>As-porto cibo pronto - Sign Up</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,8 +16,8 @@
             <div class="container">
                 <a class="navbar-brand fw-bold" href="#home">
                     <i class="fas fa-bicycle" style="color: #6B4BA0;"></i>
-                    Wheelie
-                    <span class="text-primary">Good Food</span>
+                    Asporto
+                    <span class="text-primary">cibo pronto!</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
@@ -41,7 +41,7 @@
                             <div class="mb-4 hero-icon">
                                 <i class="fas fa-bicycle fa-5x" style="color: #6B4BA0;"></i>
                             </div>
-                            <h1 class="display-4 fw-bold mb-3">Wheelie <span class="text-primary">Good Food</span></h1>
+                            <h1 class="display-4 fw-bold mb-3">As-porto <span class="text-primary">cibo pronto!</span></h1>
                             <p class="lead text-muted mb-5">
                                 Fair fees, fast delivery, honest work.
                                 <br>
@@ -79,6 +79,15 @@
                                 </div>
                                 
                                 <form id="registrationForm" onsubmit="handleStep1Submit(event)">
+									<div class="form-group mb-5">
+                                        <label for="role" class="form-label"><i class="fas fa-crown me-2"></i>Choose Your Role</label>
+                                        <select class="form-select form-select-lg" id="role" name="role" onchange="updateRoleDisplay(this.value)" required>
+                                            <option value="customer" selected>Customer</option>
+                                            <option value="food_place">Food Place</option>
+                                            <option value="rider">Delivery Driver</option>
+                                        </select>
+                                    </div>
+
                                     <div class="form-group mb-4">
                                         <label for="email" class="form-label"><i class="fas fa-envelope me-2"></i>Email Address</label>
                                         <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="mario.rossi@gmail.com" required>
@@ -96,14 +105,7 @@
                                         <small class="form-text text-muted">At least 8 characters for security.</small>
                                     </div>
                                     
-                                    <div class="form-group mb-5">
-                                        <label for="role" class="form-label"><i class="fas fa-crown me-2"></i>Choose Your Role</label>
-                                        <select class="form-select form-select-lg" id="role" name="role" onchange="updateRoleDisplay(this.value)" required>
-                                            <option value="customer" selected>🛵 Customer - Order Food Affordably</option>
-                                            <option value="food_place">🍕 Food Place - Grow Your Business</option>
-                                            <option value="rider">🚴 Delivery Driver - Earn on Your Terms</option>
-                                        </select>
-                                    </div>
+
                                     
                                     <button type="submit" class="btn btn-lg w-100 rounded-pill btn-role" id="submitBtn">
                                         Create Account <i class="fas fa-arrow-right ms-2"></i>
@@ -196,7 +198,7 @@
             <div class="container">
                 <div class="row text-center text-md-start">
                     <div class="col-md-4 mb-3">
-                        <h5>Wheelie Good Food</h5>
+                        <h5>As-porto cibo pronto</h5>
                         <p class="small text-muted">Fair fees. Fast delivery. Honest work.</p>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -209,13 +211,13 @@
                     <div class="col-md-4 mb-3">
                         <h5>Legal</h5>
                         <ul class="list-unstyled small">
-                            <li><a href="#" class="text-decoration-none">Terms of Service</a></li>
-                            <li><a href="#" class="text-decoration-none">Privacy Policy</a></li>
+                            <li><a href="#tos" class="text-decoration-none">Terms of Service</a></li>
+                            <li><a href="#pp" class="text-decoration-none">Privacy Policy</a></li>
                         </ul>
                     </div>
                 </div>
                 <hr>
-                <p class="text-center text-muted small mb-0">&copy; 2026 Wheelie Good Food. All rights reserved.</p>
+                <p class="text-center text-muted small mb-0">&copy; 2026 As-porto cibo pronto. All rights reserved.</p>
             </div>
         </footer>
 

@@ -16,6 +16,23 @@ document.addEventListener('DOMContentLoaded', function()
     // Keyboard shortcut (Escape to home)
     document.addEventListener('keydown', function(event)
 	{
-        if (event.key === 'Escape') resetToHome();
+        if (event.key === 'Escape')
+			resetToHome();
     });
+
+	window.addEventListener('popstate', (event) => {
+		if (event.state && event.state.view) {
+			switchView(event.state.view);
+		}
+	});
+	
+	window.addEventListener('DOMContentLoaded', () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const view = urlParams.get('view');
+		if (view) {
+			switchView(view);
+		}
+	});
+	
+	
 });

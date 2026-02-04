@@ -32,22 +32,29 @@ async function handleStep1Submit(event)
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Registration failed');
+        if (!response.ok)
+			throw new Error(data.message || 'Registration failed');
 
         console.log('✅ Server Response:', data);
         currentState.userEmail = email;
         currentState.selectedRole = role;
         
-        if (data.id) currentState.userId = data.id; 
-        else throw new Error("Server did not return a User ID!");
+        if (data.id)
+			currentState.userId = data.id; 
+        else
+			throw new Error("Server did not return a User ID!");
 
         switchView('view-registration-step2');
         updateStep2Display(role);
 
-    } catch (error) {
+    }
+	catch (error)
+	{
         console.error('❌ Error:', error);
         alert('Registration Failed: ' + error.message);
-    } finally {
+    }
+	finally
+	{
         submitBtn.disabled = false;
         submitBtn.innerText = "Create Account";
     }
@@ -61,7 +68,8 @@ function updateStep2Display(role)
     const template = ROLE_FORMS[role];
     
     formContainer.innerHTML = '';
-    if (template) {
+    if (template)
+	{
         formContainer.innerHTML = `
             <form id="step2Form" data-endpoint="${template.endpoint}" onsubmit="handleStep2Submit(event)">
                 ${template.html}
@@ -69,7 +77,9 @@ function updateStep2Display(role)
                     <button type="submit" class="btn btn-lg btn-success text-white">Complete Setup <i class="fas fa-check ms-2"></i></button>
                 </div>
             </form>`;
-    } else {
+    }
+	else
+	{
         formContainer.innerHTML = '<div class="alert alert-danger">Error: Unknown role type.</div>';
     }
     step2Card.setAttribute('data-role', role);
@@ -178,7 +188,7 @@ async function logout()
     goToLogin(); // Send them to login screen
 }
 
-//6)
+//6) TODO: 
 async function performLogin(email, password)
 {
     console.log("Ok bro... Authenticating...", email);
@@ -231,9 +241,6 @@ async function performLogin(email, password)
     }
 }
 
-/**
- * Event Handler for the actual Login Form
- */
 async function handleLoginFormSubmit(event)
 {
     event.preventDefault(); // Stop page reload
@@ -244,53 +251,11 @@ async function handleLoginFormSubmit(event)
     await performLogin(email, pass);
 }
 
-//TODO: old version, updated by gemini
-//async function handleStep2Submit(event)
-//{
-//    event.preventDefault();
-//    const form = event.target;
-//    const endpoint = form.getAttribute('data-endpoint');
-//    const formData = new FormData(form);
-//    const payload = Object.fromEntries(formData.entries());
-//
-//    if (!currentState.userId)
-//	{
-//        alert("Critical Error: User ID missing. Please refresh.");
-//        return;
-//    }
-//
-//    payload.user_id = currentState.userId;
-//    console.log("📤 Sending to", endpoint, payload);
-//
-//    const submitBtn = form.querySelector('button[type="submit"]');
-//    submitBtn.disabled = true;
-//
-//    try {
-//        const response = await fetch(endpoint, {
-//            method: 'POST',
-//            headers: { 'Content-Type': 'application/json' },
-//            body: JSON.stringify(payload)
-//        });
-//
-//        const data = await response.json();
-//        if (!response.ok) throw new Error(data.message || 'Creation failed');
-//
-//        console.log("✅ Success:", data);
-//        alert(`Profile Created! ID: ${data.id}. Please Login.`);
-//        
-//        // Redirect to Login after successful registration
-//		//TODO: instead of redirect to another form to perform the login, should we just log the user in after the creation?
-//        goToLogin();
-//
-//    } catch (error) {
-//        console.error("❌ Error: ", error);
-//        alert("Error: " + error.message);
-//        submitBtn.disabled = false;
-//    }
-//}
+
 
 //new version
-async function handleStep2Submit(event) {
+async function handleStep2Submit(event)
+{
     event.preventDefault();
     const form = event.target;
     const endpoint = form.getAttribute('data-endpoint');
@@ -318,35 +283,17 @@ async function handleStep2Submit(event) {
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Creation failed');
+        if (!response.ok)
+			throw new Error(data.message);
 
-        console.log("✅ Profile Created:", data);
+		
+		console.log("✅ Profile Created:", data);
+		await checkSession();
 
-		if (data.id)
-		{
-            currentState.entityId = data.id;
-            console.log("ok bro, Entity Linked. ID:", currentState.entityId);
-        }
-        
-        // 2. AUTO-LOGIN MOMENT
-        // We use the email/password we saved in Step 1
-        if (currentState.userEmail && currentState.userPassword)
-		{
-            console.log("🔄 Auto-logging in new user...");
-            const loginSuccess = await performLogin(currentState.userEmail, currentState.userPassword);
-            
-            // If login worked, we are done (performLogin handles the redirect)
-            if (loginSuccess)
-					return; 
-        }
-		else
-		{
-            console.warn("⚠️ Credentials lost from memory. Redirecting to manual login.");
-            goToLogin();
-        }
-
-    } catch (error) {
-        console.error("❌ Error: ", error);
+    }
+	catch (error)
+	{
+        console.error("Error: ", error);
         alert("Error: " + error.message);
         submitBtn.disabled = false;
         submitBtn.innerText = "Complete Setup";
@@ -396,7 +343,8 @@ async function handleMenuFormSubmit(event)
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error('Operation failed');
+        if (!response.ok)
+			throw new Error('Operation failed');
 
         console.log(isUpdate ? "✅ Item Updated" : "✅ Item Created");
 
@@ -406,14 +354,16 @@ async function handleMenuFormSubmit(event)
         modalInstance.hide();
         loadMenuItems(); // Refresh Grid
 
-    } catch (error) {
+    } catch (error)
+	{
         console.error(error);
         alert("Error: " + error.message);
     }
 }
 
 // Helper to open modal
-function showAddMenuModal() {
+function showAddMenuModal()
+{
     const modal = new bootstrap.Modal(document.getElementById('addMenuModal'));
     modal.show();
 }

@@ -53,9 +53,9 @@ const ROLE_FORMS = {
 };
 
 const roleConfig = {
-    customer: { icon: 'fas fa-user-tie', title: 'Customer', message: 'Tired of unfair delivery fees?', subtext: 'Join thousands eating better, paying less.', color: '#73628A' },
-    food_place: { icon: 'fas fa-utensils', title: 'Food Place', message: 'Your digital menu, your rules', subtext: 'Grow your business with fair fees.', color: '#313D5A' },
-    rider: { icon: 'fas fa-motorcycle', title: 'Delivery Driver', message: 'Your time, your pay', subtext: 'We don\'t take a cut. We help you connect.', color: '#CBC5EA' }
+    customer: { icon: 'fas fa-user-tie', title: 'Customer', message: 'Tired of unfair delivery fees?', subtext: 'Join thousands eating better, paying less.', color: '#654EA3' },
+    food_place: { icon: 'fas fa-utensils', title: 'Food Place', message: 'Your digital menu, your rules', subtext: 'Grow your business with fair fees.', color: '#7353ED' },
+    rider: { icon: 'fas fa-motorcycle', title: 'Delivery Driver', message: 'Your time, your pay', subtext: 'We don\'t take a cut. We help you connect.', color: '#5365ED' }
 };
 
 
@@ -73,7 +73,8 @@ let currentState = {
 
 
 
-function switchView(viewName) {
+function switchView(viewName)
+{
     const allViews = document.querySelectorAll('.view, .view-section'); // Updated selector to catch login/dashboard
     allViews.forEach(view => {
         view.classList.remove('active');
@@ -88,12 +89,17 @@ function switchView(viewName) {
         targetView.classList.add('active');
     }
     
+    // Update the URL and push a new state to the history
+    const newUrl = `/${viewName}`; // e.g., '/registration/step1'
+    window.history.pushState({ view: viewName }, '', newUrl);
+
     currentState.currentView = viewName;
     window.scrollTo(0, 0);
-    console.log(`📍 Switched to view: ${viewName}`);
+    console.log(`Switched to view: ${viewName}`);
 }
 
-function updateRoleDisplay(role) {
+function updateRoleDisplay(role)
+{
     if (!roleConfig[role]) return;
     const config = roleConfig[role];
     
@@ -104,7 +110,7 @@ function updateRoleDisplay(role) {
     document.getElementById('registrationCard').setAttribute('data-role', role);
     
     currentState.selectedRole = role;
-    console.log(`✨ Role updated to: ${role}`);
+    console.log(`Role updated to: ${role}`);
 }
 
 function togglePasswordVisibility()
