@@ -343,61 +343,59 @@ async function handleStep2Submit(event) {
 
 
 /* ************************************************************************** */
-/* FUNCTION: CREATE MENU ITEM                                               */
+/* FUNCTION: HANDLE MENU FORM (Create OR Update)                            */
 /* ************************************************************************** */
-async function handleCreateMenuItem(event)
+async function handleMenuFormSubmit(event)
 {
     event.preventDefault();
-
-    // 1. Get Data
     const form = event.target;
     const formData = new FormData(form);
     const payload = Object.fromEntries(formData.entries());
 
-    // 2. Add Critical IDs
-    // We need the food_place_id. Since we logged in as a User, 
-    // we assume 'currentState.userId' links to a FoodPlace.
-    // OPTION A: You stored food_place_id in currentState during login.
-    // OPTION B (MVP): We send user_id and PHP finds the restaurant.
-    
-    // For now, let's assume we need to pass food_place_id. 
-    // If you don't have it in state, we might hit a bug here.
-    // payload.food_place_id = currentState.foodPlaceId; // IDEAL
-    
-    // HACK FOR NOW: If your API requires food_place_id explicitly, we need to know it.
-    // If your API can infer it from the logged-in user, great.
-    // Let's assume we pass a placeholder or you fixed the API to accept user_id.
-    payload.food_place_id = currentState.userId; // Temporary assumption: User ID = Place ID (or close enough for dev)
-
-    // Fix Checkbox (FormData doesn't send "false" for unchecked boxes, it sends nothing)
+    // Fix Checkbox
     payload.is_available = form.querySelector('#isAvailableCheck').checked ? 1 : 0;
+    
+    // DECIDE: Create or Update?
+    const isUpdate = (payload.id && payload.id !== ""); 
 
-    console.log("🍔 Creating Item:", payload);
+    let url = '';
+    let method = '';
+
+    if (isUpdate)
+	{
+        // --- UPDATE MODE ---
+        url = 'https://localhost/A_project_forUniversity/src/api/menu_item/update.php';
+        method = 'PUT';
+        // Note: Update PHP expects 'id' in body, which is already in payload
+    }
+	else
+	{
+        // --- CREATE MODE ---
+        url = 'https://localhost/A_project_forUniversity/src/api/menu_item/create.php';
+        method = 'POST';
+        // Create PHP needs food_place_id
+        payload.food_place_id = currentState.entityId;
+    }
 
     try {
-        const response = await fetch('https://localhost/A_project_forUniversity/src/api/menu_item/create.php', {
-            method: 'POST',
+        const response = await fetch(url, {
+            method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        const data = await response.json();
-        if (!response.ok) throw new Error(data || 'Failed to create item');
+        if (!response.ok) throw new Error('Operation failed');
 
-        // Success
-        console.log("Item Created: you sure bro?");
-        
-        // Hide Modal (Bootstrap API)
+        console.log(isUpdate ? "✅ Item Updated" : "✅ Item Created");
+
+        // Close Modal & Refresh
         const modalEl = document.getElementById('addMenuModal');
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         modalInstance.hide();
-        
-        form.reset();
-        
-        // Refresh the Grid
-        loadMenuItems(); 
+        loadMenuItems(); // Refresh Grid
 
     } catch (error) {
+        console.error(error);
         alert("Error: " + error.message);
     }
 }
