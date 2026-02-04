@@ -55,6 +55,7 @@ if (!empty($data->user_id) && !empty($data->name) && !empty($data->city))
 		echo json_encode(array(
 			"message" => "Food Place Created successfully",
 			"id" => $place->id,
+			"user_id" => $place->user_id,
 			"address_id" => $place->address->id // Optional, but useful
 		));
 	}

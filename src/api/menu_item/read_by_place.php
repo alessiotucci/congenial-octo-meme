@@ -7,7 +7,9 @@
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
+
 // api/menu_item/read_by_place.php
+
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
@@ -19,31 +21,41 @@ $database = new DbConnection();
 $db = $database->connect();
 $item = new MenuItem($db);
 
-// Get the restaurant ID from URL: ?id=1
-$item->food_place_id = isset($_GET['id']) ? $_GET['id'] : die();
+// 1. VALIDATION: Don't just die()
+if (!isset($_GET['id']))
+{
+    http_response_code(400);
+    echo json_encode(["message" => "Missing Food Place ID."]);
+    exit();
+}
 
+$item->food_place_id = $_GET['id'];
 $result = $item->read_by_food_place();
 $num = $result->rowCount();
 
-if($num > 0) {
-    $menu_arr = [];
-    $menu_arr['data'] = [];
+// 2. CONSISTENT RESPONSE
+// We always return a 'data' array. If empty, it's just []
+$menu_arr = [];
+$menu_arr['data'] = [];
 
-    while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+if($num > 0)
+{
+    while($row = $result->fetch(PDO::FETCH_ASSOC))
+	{
         extract($row);
         $menu_item = [
             'id' => $id,
             'name' => $item_name,
-            'desc' => $item_description,
+            'description' => $item_description, // Matched JS property name
             'price' => $price,
             'category' => $category,
-            'in_stock' => (bool)$is_available // Cast to true/false for clean JSON
+            'is_available' => (bool)$is_available // Matched JS property name
         ];
         array_push($menu_arr['data'], $menu_item);
     }
-    echo json_encode($menu_arr);
-} else {
-    echo json_encode("No menu items found.");
 }
-?>
 
+// Always return JSON with 200 OK (Empty list is not an error)
+http_response_code(200);
+echo json_encode($menu_arr);
+?>

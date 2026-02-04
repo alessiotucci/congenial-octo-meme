@@ -33,10 +33,38 @@ if (!empty($data->email) && !empty($data->password))
 	$stmt->bindParam(':email', $data->email);
 	$stmt->execute();
 	$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
 	// 2. VERIFY PASSWORD
 	if ($user && password_verify($data->password, $user['password']))
 	{
 		
+		$entity_id = null;
+        switch($user['role'])
+		{
+            case 'food_place':
+                $e_query = "SELECT id FROM food_place WHERE user_id = :uid LIMIT 1";
+                break;
+            case 'customer':
+                $e_query = "SELECT id FROM customer WHERE user_id = :uid LIMIT 1";
+                break;
+            case 'delivery_driver':
+                $e_query = "SELECT id FROM delivery_driver WHERE user_id = :uid LIMIT 1";
+                break;
+            default:
+                $e_query = null;
+        }
+		if ($e_query)
+		{
+            $stmt_e = $db->prepare($e_query);
+            $stmt_e->bindParam(':uid', $user['id']);
+            $stmt_e->execute();
+            $result = $stmt_e->fetch(PDO::FETCH_ASSOC); 
+            if ($result)
+			{
+                $entity_id = $result['id'];
+            }
+        }
+
 		// 3. START SECURE SESSION
 		start_secure_session();
 		// 4. REGENERATE ID (Critical for security)
@@ -51,6 +79,7 @@ if (!empty($data->email) && !empty($data->password))
 		echo json_encode(array(
 			"message" => "Login successful",
 			"role"	=> $user['role'],
+			"entity_id" => $entity_id, // look up
 			"user_id" => $user['id'],
 			"csrf_token" => $_SESSION['csrf_token'] // JS saves this in memory
 		));
