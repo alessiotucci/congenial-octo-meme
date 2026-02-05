@@ -12,22 +12,38 @@
 // The first class
 class DbConnection
 {
-	private $connection;
-	public function connect()
-	{
-		require __DIR__ . '/../config/db_params.php';
-		$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-		try
-		{
-			$this->connection = new PDO($dsn, $user, $pass);
-			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			return $this->connection;
-		}
-		catch (PDOException $e)
-		{
-			echo "Connection Failed: " . $e->getMessage();
-			return (null);
-		}
-	}
+    private $connection;
+
+    public function connect()
+    {
+        $this->connection = null;
+
+        // 1. Import the variables from the config file
+        require __DIR__ . '/../config/db_params.php';
+
+        // DEBUG: Uncomment this if it fails again to see what PHP sees
+        error_log("Attempting connect to Host: $host | DB: $db_name | User: $username");
+
+        try {
+            // 2. Use the CORRECT variable names from db_params.php
+            // $db_name, not $db
+            // $username, not $user
+            // $password, not $pass
+
+            $dsn = "mysql:host=$host;dbname=$db_name;charset=$charset";
+
+            $this->connection = new PDO($dsn, $username, $password);
+            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            return $this->connection;
+        }
+        catch (PDOException $e)
+        {
+            // Log error to Docker logs (check with: docker logs food_app)
+            error_log("Database Connection Error: " . $e->getMessage());
+			exit();
+            return null;
+        }
+    }
 }
 ?>

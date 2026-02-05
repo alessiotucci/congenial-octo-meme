@@ -67,7 +67,7 @@ check_deps:
 up:
 	@echo "$(GREEN)Building and Starting Containers...$(NC)"
 	docker-compose up -d --build
-	@echo "$(GREEN)App is running at: http://localhost:8080 (or your configured port)$(NC)"
+	@echo "$(GREEN)App is running at: http://localhost:8000 (or your configured port)$(NC)"
 
 down:
 	@echo "$(RED)Stopping Containers...$(NC)"

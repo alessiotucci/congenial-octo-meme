@@ -2,7 +2,7 @@
 //     File: src\frontend\js\foodplace.js                                     //
 //     Author: atucci <atucci@student.42.fr>                                  //
 //     Created: 2026/02/04 16:39:22                                           //
-//     Updated: 2026/02/04 16:39:24                                           //
+//     Updated: 2026/02/05 15:49:02                                           //
 //     System: unknown [SurfaceLaptopmy]                                      //
 //     Hardware: unknown | RAM: Unknown                                       //
 // ************************************************************************** //
@@ -119,7 +119,7 @@ async function loadIncomingOrders() {
     const grid = document.getElementById('kitchenGrid');
     
     try {
-        const res = await fetch(`https://localhost/A_project_forUniversity/src/api/food_order/read_by_place.php?id=${currentState.entityId}`);
+        const res = await fetch(`http://localhost:8000/api/food_order/read_by_place.php?id=${currentState.entityId}`);
         const json = await res.json();
         const orders = json.data || [];
 
@@ -212,7 +212,7 @@ async function updateOrderStatus(orderId, newStatusId) {
     console.log(`DEBUG: Updating Order #${orderId} to Status ${newStatusId}...`);
 
     try {
-        const res = await fetch('https://localhost/A_project_forUniversity/src/api/food_order/update_status.php', {
+        const res = await fetch('http://localhost:8000/api/food_order/update_status.php', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

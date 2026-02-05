@@ -2,7 +2,7 @@
 //     File: src\frontend\js\order.js                                         //
 //     Author: atucci <atucci@student.42.fr>                                  //
 //     Created: 2026/02/04 12:14:53                                           //
-//     Updated: 2026/02/04 12:14:55                                           //
+//     Updated: 2026/02/05 15:49:10                                           //
 //     System: unknown [SurfaceLaptopmy]                                      //
 //     Hardware: unknown | RAM: Unknown                                       //
 // ************************************************************************** //
@@ -31,7 +31,7 @@ async function loadOrderHistory() {
     }
 
     try {
-        const res = await fetch(`https://localhost/A_project_forUniversity/src/api/food_order/read_by_customer.php?id=${currentState.entityId}`);
+        const res = await fetch(`http://localhost:8000/api/food_order/read_by_customer.php?id=${currentState.entityId}`);
         const json = await res.json();
         const orders = json.data || [];
 
@@ -119,7 +119,7 @@ async function openOrderDetails(orderId) {
     const content = document.getElementById('orderDetailContent');
 
     try {
-        const res = await fetch(`https://localhost/A_project_forUniversity/src/api/food_order/read_single.php?id=${orderId}`);
+        const res = await fetch(`http://localhost:8000/api/food_order/read_single.php?id=${orderId}`);
         const order = await res.json();
 
         // 2. Render Receipt

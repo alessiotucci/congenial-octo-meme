@@ -2,7 +2,7 @@
 #     File: docker-compose.yml                                                 #
 #     Author: atucci <atucci@student.42.fr>                                    #
 #     Created: 2026/01/25 17:58:47                                             #
-#     Updated: 2026/02/02 17:30:27                                             #
+#     Updated: 2026/02/05 15:16:01                                             #
 #     System: Linux [e4r3p4.42roma.it]                                         #
 #     Hardware: Intel Core i5-8600 | RAM: 15GB                                 #
 # **************************************************************************** #
@@ -64,10 +64,7 @@ services:
     ports:
       - "${APP_PORT}:80"
     volumes:
-      # Live Code Editing: Maps your 'src' folder directly to the web root
-      #- ./src:/var/www/html
-      # The :z tells Linux "relabel this folder so the container can read it"
-      - ./src:/var/www/html:z
+      - ./src:/var/www/html
     environment:
       DB_HOST: db
       DB_NAME: ${MYSQL_DATABASE}

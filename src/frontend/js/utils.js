@@ -2,7 +2,7 @@
 //     File: src\frontend\js\utils.js                                         //
 //     Author: atucci <atucci@student.42.fr>                                  //
 //     Created: 2026/02/04 09:29:06                                           //
-//     Updated: 2026/02/04 09:29:09                                           //
+//     Updated: 2026/02/05 15:49:22                                           //
 //     System: unknown [SurfaceLaptopmy]                                      //
 //     Hardware: unknown | RAM: Unknown                                       //
 // ************************************************************************** //
@@ -13,7 +13,7 @@
 
 const ROLE_FORMS = {
     customer: {
-        endpoint: 'https://localhost/A_project_forUniversity/src/api/customer/create.php',
+        endpoint: 'http://localhost:8000/api/customer/create.php',
         html: `
             <div class="row g-3">
                 <div class="col-md-6"><label class="form-label">First Name</label><input type="text" class="form-control" name="first_name" required></div>
@@ -23,7 +23,7 @@ const ROLE_FORMS = {
             </div>`
     },
     rider: {
-        endpoint: 'https://localhost/A_project_forUniversity/src/api/delivery_driver/create.php',
+        endpoint: 'http://localhost:8000/api/delivery_driver/create.php',
         html: `
             <div class="row g-3">
                 <div class="col-md-6"><label class="form-label">First Name</label><input type="text" class="form-control" name="first_name" required></div>
@@ -32,7 +32,7 @@ const ROLE_FORMS = {
             </div>`
     },
     food_place: {
-        endpoint: 'https://localhost/A_project_forUniversity/src/api/food_place/create.php',
+        endpoint: 'http://localhost:8000/api/food_place/create.php',
         html: `
             <h6 class="text-muted mb-3">Restaurant Details</h6>
             <div class="row g-3 mb-4">
@@ -280,7 +280,7 @@ async function viewSharedOrder(orderId) {
 
     // 3. Fetch Data
     try {
-        const res = await fetch(`https://localhost/A_project_forUniversity/src/api/food_order/read_single.php?id=${orderId}`);
+        const res = await fetch(`http://localhost:8000/api/food_order/read_single.php?id=${orderId}`);
         
         if (!res.ok)
 			throw new Error("Order not found");

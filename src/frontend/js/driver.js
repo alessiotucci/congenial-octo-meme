@@ -2,7 +2,7 @@
 //     File: src\frontend\js\driver.js                                        //
 //     Author: atucci <atucci@student.42.fr>                                  //
 //     Created: 2026/02/04 12:14:56                                           //
-//     Updated: 2026/02/04 12:14:58                                           //
+//     Updated: 2026/02/05 15:48:54                                           //
 //     System: unknown [SurfaceLaptopmy]                                      //
 //     Hardware: unknown | RAM: Unknown                                       //
 // ************************************************************************** //
@@ -74,7 +74,7 @@ async function loadAvailableJobs() {
     try {
         // We need a specific endpoint for this. 
         // It fetches Status 3 (Ready) that are Unassigned OR Assigned to Me
-        const res = await fetch(`https://localhost/A_project_forUniversity/src/api/food_order/read_for_driver.php?id=${currentState.entityId}`);
+        const res = await fetch(`http://localhost:8000/api/food_order/read_for_driver.php?id=${currentState.entityId}`);
         const json = await res.json();
         const orders = json.data || [];
 
@@ -154,7 +154,7 @@ async function loadRiderHistory() {
     
     try {
         // Status 4 = Delivered
-        const res = await fetch(`https://localhost/A_project_forUniversity/src/api/food_order/read_driver_history.php?id=${currentState.entityId}`);
+        const res = await fetch(`http://localhost:8000/api/food_order/read_driver_history.php?id=${currentState.entityId}`);
         const json = await res.json();
         const orders = json.data || [];
 
@@ -208,7 +208,7 @@ async function acceptJob(orderId) {
     };
 
     try {
-        const res = await fetch('https://localhost/A_project_forUniversity/src/api/food_order/assign_driver.php', {
+        const res = await fetch('http://localhost:8000/api/food_order/assign_driver.php', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -234,7 +234,7 @@ async function completeDelivery(orderId) {
     };
 
     try {
-        const res = await fetch('https://localhost/A_project_forUniversity/src/api/food_order/update_status.php', {
+        const res = await fetch('http://localhost:8000/api/food_order/update_status.php', {
             method: 'PUT', // We reuse the generic status update endpoint
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

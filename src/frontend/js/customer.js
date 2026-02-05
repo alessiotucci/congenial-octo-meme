@@ -2,7 +2,7 @@
 //     File: src\frontend\js\customer.js                                      //
 //     Author: atucci <atucci@student.42.fr>                                  //
 //     Created: 2026/02/04 12:17:20                                           //
-//     Updated: 2026/02/04 12:17:24                                           //
+//     Updated: 2026/02/05 15:48:28                                           //
 //     System: unknown [SurfaceLaptopmy]                                      //
 //     Hardware: unknown | RAM: Unknown                                       //
 // ************************************************************************** //
@@ -89,7 +89,7 @@ async function loadFoodPlaces() {
     document.getElementById('backToRestaurantsBtn').style.display = 'none'; // Hide back button
     
     try {
-        const response = await fetch('https://localhost/A_project_forUniversity/src/api/food_place/read.php');
+        const response = await fetch('http://localhost:8000/api/food_place/read.php');
         const json = await response.json();
         const places = json.data || [];
 
@@ -137,7 +137,7 @@ async function viewRestaurantMenu(id, name)
         </div>`;
 
     try {
-        const res = await fetch(`https://localhost/A_project_forUniversity/src/api/menu_item/read_by_place.php?id=${id}`);
+        const res = await fetch(`http://localhost:8000/api/menu_item/read_by_place.php?id=${id}`);
         const json = await res.json();
         const items = json.data || [];
 
@@ -283,7 +283,7 @@ async function openCheckoutModal() {
 
     // Fetch Addresses from API
     try {
-        const res = await fetch(`https://localhost/A_project_forUniversity/src/api/address/read_by_customer.php?id=${currentState.entityId}`);
+        const res = await fetch(`http://localhost:8000/api/address/read_by_customer.php?id=${currentState.entityId}`);
         const data = await res.json();
         customerAddresses = data.data || []; 
     } catch (e) {
@@ -422,7 +422,7 @@ async function handleCreateAddress(event) {
     payload.street_number = '0'; 
 
     try {
-        const res = await fetch('https://localhost/A_project_forUniversity/src/api/address/create.php', {
+        const res = await fetch('http://localhost:8000/api/address/create.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -476,7 +476,7 @@ async function placeOrder() {
 
     try
 	{
-        const response = await fetch('https://localhost/A_project_forUniversity/src/api/food_order/create.php', {
+        const response = await fetch('http://localhost:8000/api/food_order/create.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

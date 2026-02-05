@@ -3,7 +3,7 @@
 /*     File: DeliveryDriver.php                                               */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/23 15:56:32                                           */
-/*     Updated: 2026/01/29 16:51:36                                           */
+/*     Updated: 2026/02/05 17:01:23                                           */
 /*     System: WindowsNT [DESKTOP-TQURMND]                                    */
 /*     Hardware: c:\programdata\chocolatey\lib\unxutils\tools\unxutils...     */
 /* ************************************************************************** */
@@ -41,7 +41,7 @@ class DeliveryDriver
 		$this->phone_number_original = htmlspecialchars(strip_tags($this->phone_number_original));
 		//TODO: we need a function to normalize the phone number, otherwise this
 		// field is pointless
-		$this->phone_number_normalized = htmlspecialchars(strip_tags($this->phone_number_normalized));
+		//$this->phone_number_normalized = htmlspecialchars(strip_tags($this->phone_number_normalized));
 		$this->rating = htmlspecialchars(strip_tags($this->rating));
 		$this->user_id = htmlspecialchars(strip_tags($this->user_id));
 

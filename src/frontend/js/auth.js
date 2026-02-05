@@ -2,7 +2,7 @@
 //     File: src\frontend\js\auth.js                                          //
 //     Author: atucci <atucci@student.42.fr>                                  //
 //     Created: 2026/02/04 09:28:43                                           //
-//     Updated: 2026/02/04 09:28:46                                           //
+//     Updated: 2026/02/05 16:09:18                                           //
 //     System: unknown [SurfaceLaptopmy]                                      //
 //     Hardware: unknown | RAM: Unknown                                       //
 // ************************************************************************** //
@@ -25,7 +25,7 @@ async function handleStep1Submit(event)
     submitBtn.innerText = "Creating Account...";
 
     try {
-        const response = await fetch('https://localhost/A_project_forUniversity/src/api/user/register.php', {
+        const response = await fetch('http://localhost:8000/api/user/register.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password, role })
@@ -51,7 +51,7 @@ async function handleStep1Submit(event)
 	catch (error)
 	{
         console.error('❌ Error:', error);
-        alert('Registration Failed: ' + error.message);
+        alert(error.message);
     }
 	finally
 	{
@@ -96,7 +96,7 @@ async function handleLogin(event)
     const pass  = document.getElementById('loginPassword').value;
 
     try {
-        const response = await fetch('https://localhost/A_project_forUniversity/src/api/user/login.php', {
+        const response = await fetch('http://localhost:8000/api/user/login.php', {
             method: 'POST',
             credentials: 'include', // CRITICAL for XAMPP Sessions
             headers: { 'Content-Type': 'application/json' },
@@ -128,7 +128,7 @@ async function checkSession()
 {
     console.log("🔍 Checking Session...");
     try {
-        const response = await fetch('https://localhost/A_project_forUniversity/src/api/user/validate_session.php', {
+        const response = await fetch('http://localhost:8000/api/user/validate_session.php', {
             method: 'GET',
             credentials: 'include'
         });
@@ -170,7 +170,7 @@ async function checkSession()
 async function logout()
 {
     try {
-        await fetch('https://localhost/A_project_forUniversity/src/api/user/logout.php', {
+        await fetch('http://localhost:8000/api/user/logout.php', {
             method: 'POST',
             credentials: 'include'
         });
@@ -194,7 +194,7 @@ async function performLogin(email, password)
     console.log("Ok bro... Authenticating...", email);
     
     try {
-        const response = await fetch('https://localhost/A_project_forUniversity/src/api/user/login.php', {
+        const response = await fetch('http://localhost:8000/api/user/login.php', {
             method: 'POST',
             credentials: 'include', // CRITICAL for XAMPP Sessions
             headers: { 'Content-Type': 'application/json' },
@@ -324,14 +324,14 @@ async function handleMenuFormSubmit(event)
     if (isUpdate)
 	{
         // --- UPDATE MODE ---
-        url = 'https://localhost/A_project_forUniversity/src/api/menu_item/update.php';
+        url = 'http://localhost:8000/api/menu_item/update.php';
         method = 'PUT';
         // Note: Update PHP expects 'id' in body, which is already in payload
     }
 	else
 	{
         // --- CREATE MODE ---
-        url = 'https://localhost/A_project_forUniversity/src/api/menu_item/create.php';
+        url = 'http://localhost:8000/api/menu_item/create.php';
         method = 'POST';
         // Create PHP needs food_place_id
         payload.food_place_id = currentState.entityId;
@@ -379,7 +379,7 @@ function showAddMenuModal()
 async function recoverEntityId() 
 {
     try {
-        const res = await fetch('https://localhost/A_project_forUniversity/src/api/user/get_entity_id.php', {
+        const res = await fetch('http://localhost:8000/api/user/get_entity_id.php', {
             method: 'GET',
             credentials: 'include'
         });
