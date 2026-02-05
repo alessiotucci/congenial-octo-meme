@@ -2,7 +2,7 @@
 //     File: src\frontend\js\customer.js                                      //
 //     Author: atucci <atucci@student.42.fr>                                  //
 //     Created: 2026/02/04 12:17:20                                           //
-//     Updated: 2026/02/05 15:48:28                                           //
+//     Updated: 2026/02/05 21:33:41                                           //
 //     System: unknown [SurfaceLaptopmy]                                      //
 //     Hardware: unknown | RAM: Unknown                                       //
 // ************************************************************************** //
@@ -11,7 +11,8 @@
 /* RENDER: CUSTOMER DASHBOARD                                                 */
 /* -------------------------------------------------------------------------- */
 
-function renderCustomerDashboard(container) {
+function renderCustomerDashboard(container)
+{
     // 1. Header & Navigation
     const headerHTML = `
         <div class="d-flex justify-content-between align-items-center mb-3 sticky-top bg-white py-2" style="z-index: 1000;">
@@ -203,12 +204,6 @@ function addToCart(itemId, itemName, itemPrice, restId, restName) {
 }
 
 
-/* -------------------------------------------------------------------------- */
-/* CART LOGIC: UI UPDATES & CHECKOUT                                          */
-/* -------------------------------------------------------------------------- */
-
-// Global Cache for addresses (so we don't fetch them on every render)
-let customerAddresses = [];
 
 /**
  * 1. updateCartUI
@@ -262,251 +257,10 @@ function updateCartUI() {
     `;
 }
 
-/**
- * 2. openCheckoutModal
- * Triggered when user clicks the floating button.
- * Fetches addresses -> Decides what to show.
- */
-async function openCheckoutModal() {
-    const modalEl = document.getElementById('checkoutModal');
-    const modalBody = modalEl.querySelector('.modal-body');
-    const modal = new bootstrap.Modal(modalEl);
-
-    // Show loading state while we check the database
-    modalBody.innerHTML = `
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary"></div>
-            <p class="mt-2 text-muted">Checking delivery options...</p>
-        </div>`;
-    
-    modal.show();
-
-    // Fetch Addresses from API
-    try {
-        const res = await fetch(`http://localhost:8000/api/address/read_by_customer.php?id=${currentState.entityId}`);
-        const data = await res.json();
-        customerAddresses = data.data || []; 
-    } catch (e) {
-        console.warn("Address fetch failed", e);
-        customerAddresses = [];
-    }
-
-    // Render the correct view (Address Form OR Order Summary)
-    renderCheckoutContent(modalEl);
-}
-
-/**
- * 3. renderCheckoutContent
- * The "Brain" of the modal. Swaps between "Add Address" and "Place Order".
- */
-function renderCheckoutContent(modalEl) {
-    const cart = cartManager.get();
-    const totalPrice = cartManager.getTotal().toFixed(2);
-    
-    const body = modalEl.querySelector('.modal-body');
-    const footer = modalEl.querySelector('.modal-footer');
-
-    // --- SCENARIO A: NO ADDRESS (Show Creation Form) ---
-    if (customerAddresses.length === 0) {
-        footer.style.display = 'none'; // Hide checkout buttons
-        body.innerHTML = `
-            <div class="alert alert-warning border-0 d-flex align-items-center">
-                <i class="fas fa-map-marker-alt me-3 fa-2x"></i>
-                <div>
-                    <strong>No Address Found</strong><br>
-                    Please add a delivery address to continue.
-                </div>
-            </div>
-            
-            <form id="newAddressForm" onsubmit="handleCreateAddress(event)">
-                <h6 class="fw-bold mb-3">New Address Details</h6>
-                <div class="mb-3">
-                    <input type="text" class="form-control" name="address_line1" placeholder="Street Address (e.g. Via Roma 10)" required>
-                </div>
-                <div class="row g-2 mb-3">
-                    <div class="col-6">
-                        <input type="text" class="form-control" name="city" placeholder="City" required>
-                    </div>
-                    <div class="col-6">
-                        <input type="text" class="form-control" name="postal_code" placeholder="Postal Code" required>
-                    </div>
-                </div>
-                <input type="hidden" name="country_id" value="1"> 
-                <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill">Save & Continue</button>
-            </form>
-        `;
-        return;
-    }
-
-    // --- SCENARIO B: ADDRESS EXISTS (Show Order Summary) ---
-    footer.style.display = 'flex';
-    
-    // Create dropdown options
-    const addressOptions = customerAddresses.map(addr => 
-        `<option value="${addr.id}">${addr.address_line1}, ${addr.city}</option>`
-    ).join('');
-
-    body.innerHTML = `
-        <h6 class="text-muted small text-uppercase mt-3">From: ${cart.restaurantName}</h6>
-        
-        <ul class="list-group list-group-flush mb-4">
-            ${cart.items.map(item => `
-                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                    <div>
-                        <span class="fw-bold text-primary">${item.quantity}x</span> ${item.name}
-                        <div class="small text-muted">€${item.price}</div>
-                    </div>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-secondary" 
-                                onclick="cartManager.remove('${item.id}'); renderCheckoutContent(document.getElementById('checkoutModal'))">
-                            <i class="fas fa-minus small"></i>
-                        </button>
-                        <button class="btn btn-outline-primary" 
-                                onclick="addToCart('${item.id}', '', ${item.price}, ${cart.restaurantId}, ''); renderCheckoutContent(document.getElementById('checkoutModal'))">
-                            <i class="fas fa-plus small"></i>
-                        </button>
-                    </div>
-                </li>
-            `).join('')}
-        </ul>
-        
-        <div class="bg-light p-3 rounded mb-3">
-            <label class="form-label small fw-bold text-muted text-uppercase">Delivering To</label>
-            <div class="input-group">
-                <span class="input-group-text bg-white border-end-0 text-primary"><i class="fas fa-home"></i></span>
-                <select class="form-select border-start-0 ps-0" id="deliveryAddressSelect">
-                    ${addressOptions}
-                </select>
-            </div>
-            <button class="btn btn-link btn-sm p-0 mt-2 text-decoration-none" 
-                    onclick="customerAddresses=[]; renderCheckoutContent(document.getElementById('checkoutModal'))">
-                + Add different address
-            </button>
-        </div>
-
-        <div class="d-flex justify-content-between border-top pt-3">
-            <span class="h5 mb-0">Total</span>
-            <span class="h5 mb-0 fw-bold text-success">€${totalPrice}</span>
-        </div>
-    `;
-    
-    // Footer Actions
-    footer.innerHTML = `
-        <button class="btn btn-link text-danger text-decoration-none" 
-                onclick="cartManager.clear(); bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();">
-            Clear Cart
-        </button>
-        <button class="btn btn-success w-100 rounded-pill py-2 shadow-sm" onclick="placeOrder()">
-            Place Order <i class="fas fa-check ms-2"></i>
-        </button>
-    `;
-}
-
-/**
- * 4. handleCreateAddress
- * Handles the submission of the "New Address" form inside the modal.
- */
-async function handleCreateAddress(event) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
-    const payload = Object.fromEntries(formData.entries());
-
-    // Required by your PHP API Transaction Logic
-    payload.customer_id = currentState.entityId;
-    
-    // Defaults for optional fields
-    payload.address_line2 = ''; 
-    payload.region = ''; 
-    payload.unit_number = '';
-    payload.street_number = '0'; 
-
-    try {
-        const res = await fetch('http://localhost:8000/api/address/create.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        
-        if (res.ok) {
-            // If successful, reload the modal. 
-            // openCheckoutModal will re-fetch addresses, find the new one, and show Scenario B.
-            openCheckoutModal(); 
-        } else {
-            const err = await res.json();
-            alert("Address creation failed: " + (err.message || "Unknown Error"));
-        }
-    } catch (e) {
-        console.error(e);
-        alert("Network Error");
-    }
-}
 
 
 
 
 
-/* -------------------------------------------------------------------------- */
-/* LOGIC: SEND ORDER TO API                                                   */
-/* -------------------------------------------------------------------------- */
-async function placeOrder() {
-    const cart = cartManager.get();
-    if (cart.items.length === 0) return;
 
-    // Prepare Payload
-    // PHP expects: customer_id, food_place_id, customer_address_id, items array
-    
-    // WARNING: We are using a Hardcoded Address ID (1) because we haven't built Address Management yet.
-    // If you delete address ID 1 from DB, this will fail.
-    const addressId = document.getElementById('deliveryAddressSelect').value;
-	console.log(`Dumb mfs this that ${currentState.entityId} is not null`);
-    const payload = {
-        customer_id: currentState.entityId, // The Customer ID we captured during login
-        food_place_id: cart.restaurantId,
-        customer_address_id: addressId, 
-        items: cart.items.map(i => ({
-            menu_item_id: i.id,
-            quantity: i.quantity,
-            price_at_order: i.price // Sending price just in case, though backend might calculate it
-        })),
-        requested_delivery_time: new Date(new Date().getTime() + 45*60000).toISOString().slice(0, 19).replace('T', ' ') // +45 mins from now
-    };
 
-    console.log("🚀 Sending Order:", payload);
-
-    try
-	{
-        const response = await fetch('http://localhost:8000/api/food_order/create.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-        if (!response.ok)
-			throw new Error(data.message);
-
-		// 1. HIDE MODAL FIRST (Before destroying it)
-		const modalEl = document.getElementById('checkoutModal');
-		const modalInstance = bootstrap.Modal.getInstance(modalEl);
-		if (modalInstance)
-		{
-			modalInstance.hide();
-		}
-
-        // SUCCESS
-        cartManager.clear(); // Wipe LocalStorage
-        
-        alert(`✅ Order Placed! Total Charged: €${data.total_charged}`);
-        
-        // Optional: Switch to "Orders" tab
-        // document.getElementById('orders-tab').click();
-
-    }
-	catch (error)
-	{
-		console.log(error.message);
-        alert("DEBUG: " + error.message);
-		console.log(payload);
-    }
-}

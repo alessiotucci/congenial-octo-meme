@@ -31,22 +31,41 @@ const ROLE_FORMS = {
                 <div class="col-md-12"><label class="form-label">Phone Number</label><input type="tel" class="form-control" name="phone_number_original" required></div>
             </div>`
     },
-    food_place: {
+   food_place: {
         endpoint: 'http://localhost:8000/api/food_place/create.php',
         html: `
             <h6 class="text-muted mb-3">Restaurant Details</h6>
             <div class="row g-3 mb-4">
                 <div class="col-md-12"><label class="form-label">Restaurant Name</label><input type="text" class="form-control" name="name" required></div>
-                <div class="col-md-6"><label class="form-label">Cuisine Type</label><input type="text" class="form-control" name="food_type"></div>
-                <div class="col-md-6"><label class="form-label">Opening Hours</label><input type="text" class="form-control" name="opening_hours"></div>
+                <div class="col-md-6"><label class="form-label">Cuisine Type</label><input type="text" class="form-control" name="food_type" placeholder="e.g. Italian"></div>
+                
+                <div class="col-md-6">
+                    <label class="form-label">Opening Hours</label>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="form-floating">
+                                <input type="time" class="form-control text-center px-1" id="timeOpen" onchange="combineHours()" placeholder="Opens">
+                                <label for="timeOpen" class="text-muted small">From</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating">
+                                <input type="time" class="form-control text-center px-1" id="timeClose" onchange="combineHours()" placeholder="Closes">
+                                <label for="timeClose" class="text-muted small">Until</label>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="opening_hours" id="finalHours">
+                </div>
                 <div class="col-md-12"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="2"></textarea></div>
             </div>
+            
             <h6 class="text-muted mb-3">Business Address</h6>
             <div class="row g-3">
-                <div class="col-md-8"><label class="form-label">Street Address</label><input type="text" class="form-control" name="address_line1" required></div>
-                <div class="col-md-4"><label class="form-label">Street No.</label><input type="text" class="form-control" name="street_number" required></div>
-                <div class="col-md-6"><label class="form-label">City</label><input type="text" class="form-control" name="city" required></div>
-                <div class="col-md-6"><label class="form-label">Postal Code</label><input type="text" class="form-control" name="postal_code" required></div>
+                <div class="col-12"><label class="form-label">Street Address</label><input type="text" class="form-control" name="address_line1" required></div>
+                <div class="col-4"><label class="form-label">Street No.</label><input type="text" class="form-control" name="street_number" required></div>
+                <div class="col-8"><label class="form-label">City</label><input type="text" class="form-control" name="city" required></div>
+                <div class="col-6"><label class="form-label">Postal Code</label><input type="text" class="form-control" name="postal_code" required></div>
                 <input type="hidden" name="country_id" value="1">
             </div>`
     }
@@ -324,4 +343,24 @@ async function viewSharedOrder(orderId) {
                 <i class="fas fa-exclamation-triangle me-2"></i> Could not load order details.
             </div>`;
     }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* HELPER: COMBINE OPENING HOURS                                              */
+/* -------------------------------------------------------------------------- */
+function combineHours() {
+    const open = document.getElementById('timeOpen').value;
+    const close = document.getElementById('timeClose').value;
+    const finalInput = document.getElementById('finalHours');
+
+    if (open && close) {
+        // Format: "09:00-22:00"
+        finalInput.value = `${open}-${close}`;
+    } else {
+        // If incomplete, leave empty or set default
+        finalInput.value = '';
+    }
+    
+    console.log("Updated Hours:", finalInput.value);
 }
