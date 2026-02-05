@@ -15,7 +15,7 @@ INSERT INTO order_status (id, status_value) VALUES
 
 -- 2. Country
 INSERT INTO country (id, country_name) VALUES
-(1, 'Italy')
+(1, 'Italy'),
 (2, 'United States'),
 (3, 'Japan');
 
