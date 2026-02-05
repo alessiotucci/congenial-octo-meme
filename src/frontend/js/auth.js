@@ -378,7 +378,6 @@ function showAddMenuModal()
 /* -------------------------------------------------------------------------- */
 async function recoverEntityId() 
 {
-	alert("missing the id! fuck: fix it now");
     try {
         const res = await fetch('https://localhost/A_project_forUniversity/src/api/user/get_entity_id.php', {
             method: 'GET',
@@ -389,11 +388,11 @@ async function recoverEntityId()
         if (json.status === 'success')
 		{
             currentState.entityId = json.entity_id;
-            console.log(`🚑 Recovery Successful! Entity ID restored: ${json.entity_id}`);
+            console.log(`DEBUG LOG: Recovery Successful! Entity ID restored: ${json.entity_id}`);
         }
 		else
 		{
-            console.error("❌ Recovery Failed. User has no profile?");
+            console.error("DEBUG LOG: Recovery Failed. User has no profile?");
 			logout();
             // Optional: Redirect to Step 2 Setup if strictly needed
         }
