@@ -34,6 +34,10 @@ class FoodOrder
 
 	public $assigned_driver_id;
 
+	// NEW Properties for the Extended View
+    public $customer_name;
+    public $delivery_address;
+
 
 	public function __construct($db)
 	{
@@ -179,19 +183,32 @@ class FoodOrder
     // ------------------------------------------------------------------
     // 3. READ SINGLE (Detailed View with Items)
     // ------------------------------------------------------------------
-    public function read_single()
+	public function read_single()
     {
         $query = 'SELECT 
                     o.id, 
                     o.total_amount, 
+                    o.delivery_fee,
                     o.order_datetime, 
                     o.order_status_id,
                     o.assigned_driver_id,
+                    -- Restaurant Info
                     fp.name as restaurant_name,
-                    os.status_value
+                    -- Status Info
+                    os.status_value,
+                    -- Customer Info
+                    c.first_name, 
+                    c.last_name,
+                    -- Address Info
+                    a.address_line1, 
+                    a.city, 
+                    a.postal_code
                   FROM ' . $this->table . ' o
                   JOIN food_place fp ON o.food_place_id = fp.id
                   JOIN order_status os ON o.order_status_id = os.id
+                  JOIN customer c ON o.customer_id = c.id
+                  JOIN customer_address ca ON o.customer_address_id = ca.id
+                  JOIN address a ON ca.address_id = a.id
                   WHERE o.id = ?
                   LIMIT 0,1';
 
@@ -202,16 +219,24 @@ class FoodOrder
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
+            // Map DB columns to Object Properties
             $this->id = $row['id'];
             $this->total_amount = $row['total_amount'];
+            $this->delivery_fee = $row['delivery_fee'];
             $this->order_datetime = $row['order_datetime'];
             $this->order_status_id = $row['order_status_id'];
             $this->status_name = $row['status_value'];
-            $this->restaurant_name = $row['restaurant_name'];
             $this->assigned_driver_id = $row['assigned_driver_id'];
+            
+            $this->restaurant_name = $row['restaurant_name'];
+            
+            // Format Composite Fields
+            $this->customer_name = $row['first_name'] . ' ' . $row['last_name'];
+            $this->delivery_address = $row['address_line1'] . ', ' . $row['city'] . ' ' . $row['postal_code'];
 
-            // CRITICAL: Fetch the items list automatically
+            // Fetch Items Helper
             $this->get_order_items();
+            
             return true;
         }
         return false;

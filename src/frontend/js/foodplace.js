@@ -6,9 +6,6 @@
 //     System: unknown [SurfaceLaptopmy]                                      //
 //     Hardware: unknown | RAM: Unknown                                       //
 // ************************************************************************** //
-/* ************************************************************************** */
-/* File: js/foodplace.js                                                      */
-/* ************************************************************************** */
 
 /* -------------------------------------------------------------------------- */
 /* RENDER: RESTAURANT DASHBOARD (Tabs: Orders | Menu)                         */
@@ -239,13 +236,15 @@ async function updateOrderStatus(orderId, newStatusId) {
 }
 
 // TODO1 Implementation: Accept Order (Pending -> Cooking)
-async function acceptOrder(orderId) {
+async function acceptOrder(orderId)
+{
     // Status 2 = Cooking
     await updateOrderStatus(orderId, 2);
 }
 
 // TODO2 Implementation: Ready for Driver (Cooking -> Ready/Delivering)
-async function deliverOrder(orderId) {
+async function deliverOrder(orderId)
+{
     // Status 3 = Ready / Out for Delivery
     await updateOrderStatus(orderId, 3);
 }

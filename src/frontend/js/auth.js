@@ -149,7 +149,7 @@ async function checkSession()
 		}
 		else
 		{
-			alert("missing the id! fuck");
+			await recoverEntityId();
 			console.warn("⚠️ Session active, but Entity ID missing.");
 		}
 
@@ -203,10 +203,10 @@ async function performLogin(email, password)
 
         const data = await response.json();
         
-        if (!response.ok) throw new Error(data.message || "Login failed");
+        if (!response.ok)
+			throw new Error(data.message || "Login failed");
 
-        console.log("✅ Logged in COJONE!", data);
-		console.log(`bitch: data.entity_id: ${data.entity_id}`);
+ 
         
         // Update Global State (from utils.js)
         currentState.isLoggedIn = true;
@@ -219,13 +219,13 @@ async function performLogin(email, password)
 		if (data.entity_id)
 		{
             currentState.entityId = data.entity_id;
-			console.log(`MY DEBUG SHIT: ${currentState.entityId}`);
         }
 		else
 		{
             console.warn("DEBUG_API did not return entity_id. Some features may fail.");
-            // Fallback: If your API isn't updated yet, this will stay null
-            currentState.entityId = null; 
+            // Fallback: If your API isn't updated yet, we try to call here!
+			recoverEntityId();
+
         }
         
         // Redirect to Dashboard (from dashboard.js)
@@ -237,6 +237,7 @@ async function performLogin(email, password)
 	{
         console.error("Login Error:", error);
         alert("Authentication Failed: " + error.message);
+		logout();
         return false;
     }
 }
@@ -335,6 +336,9 @@ async function handleMenuFormSubmit(event)
         // Create PHP needs food_place_id
         payload.food_place_id = currentState.entityId;
     }
+	
+	//backup recovers;
+	recoverEntityId();
 
     try {
         const response = await fetch(url, {
@@ -366,4 +370,36 @@ function showAddMenuModal()
 {
     const modal = new bootstrap.Modal(document.getElementById('addMenuModal'));
     modal.show();
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* AUTH: RECOVER ENTITY ID (The Helper)                                       */
+/* -------------------------------------------------------------------------- */
+async function recoverEntityId() 
+{
+	alert("missing the id! fuck: fix it now");
+    try {
+        const res = await fetch('https://localhost/A_project_forUniversity/src/api/user/get_entity_id.php', {
+            method: 'GET',
+            credentials: 'include'
+        });
+        const json = await res.json();
+        
+        if (json.status === 'success')
+		{
+            currentState.entityId = json.entity_id;
+            console.log(`🚑 Recovery Successful! Entity ID restored: ${json.entity_id}`);
+        }
+		else
+		{
+            console.error("❌ Recovery Failed. User has no profile?");
+			logout();
+            // Optional: Redirect to Step 2 Setup if strictly needed
+        }
+    }
+	catch (e)
+	{
+        console.error("Recovery Network Error", e);
+    }
 }

@@ -67,6 +67,7 @@ if (!empty($data->email) && !empty($data->password) && !empty($data->role))
             $_SESSION['role'] = $user->role;
             $_SESSION['csrf_token'] = $csrf_token;
             // Note: $_SESSION['entity_id'] remains NULL until Step 2 is completed
+            
 
             // -------------------------------------------------------------
             // END SECURITY UPGRADE

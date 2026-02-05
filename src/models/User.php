@@ -3,7 +3,7 @@
 /*     File: models\User.php                                                  */
 /*     Author: atucci <atucci@student.42.fr>                                  */
 /*     Created: 2026/01/26 13:05:12                                           */
-/*     Updated: 2026/01/30 19:23:17                                           */
+/*     Updated: 2026/02/05 11:40:30                                           */
 /*     System: unknown [SurfaceLaptopmy]                                      */
 /*     Hardware: unknown | RAM: Unknown                                       */
 /* ************************************************************************** */
@@ -12,9 +12,8 @@
 class User
 {
 	private $conn;
-	private $table = 'users'; //TODO: match the MySQL table!
+	private $table = 'users';
 
-	// other properties
 	public $id;
 	public $email;
 	public $password; //TODO: only store the hashed string
@@ -23,61 +22,60 @@ class User
 
 	public function __construct($db)
 	{
-	$this->conn = $db;
+		$this->conn = $db;
 	}
 
 	public function create()
 	{
-	$query = ' INSERT INTO ' . $this->table . ' SET email = :email, password = :password, role = :role ';
-	// ALTERNATIVE (Standard SQL)
-	//$query = 'INSERT INTO ' . $this->table . ' (email, password, role) 
-    //      VALUES (:email, :password, :role)';
+		$query = ' INSERT INTO ' . $this->table . ' SET email = :email, password = :password, role = :role ';
 
-	$stmt = $this->conn->prepare($query);
-	$this->email = htmlspecialchars(strip_tags($this->email));
-	$this->password = htmlspecialchars(strip_tags($this->password));
-	$this->role = htmlspecialchars(strip_tags($this->role));
+		// ALTERNATIVE (Standard SQL)
+		//$query = 'INSERT INTO ' . $this->table . ' (email, password, role) 
+		//      VALUES (:email, :password, :role)';
 
-	//TODO
-	// 4. BIND PARAMETERS (You were missing this part!)
-        // This tells PDO: "Put the value of $this->email where you see :email"
-        $stmt->bindParam(':email', $this->email);
-        $stmt->bindParam(':password', $this->password);
-        $stmt->bindParam(':role', $this->role);
+		$stmt = $this->conn->prepare($query);
+		$this->email = htmlspecialchars(strip_tags($this->email));
+		$this->password = htmlspecialchars(strip_tags($this->password));
+		$this->role = htmlspecialchars(strip_tags($this->role));
 
-	if ($stmt->execute())
-	{
-			//printf("Success! Created the user!\n");
-			return ($this->conn->lastInsertId()); //FK (?)
-			//return (true);
-	}
-	else
-	{
-	printf("Error: %s.\n", $stmt->error);
-	return (false);
-	}
+		$stmt->bindParam(':email', $this->email);
+		$stmt->bindParam(':password', $this->password);
+		$stmt->bindParam(':role', $this->role);
+
+		if ($stmt->execute())
+		{
+				//printf("Success! Created the user!\n");
+				return ($this->conn->lastInsertId()); //FK (?)
+				//return (true);
+		}
+		else
+		{
+			printf("Error: %s.\n", $stmt->error);
+			return (false);
+		}
 	}
 
 	public function emailExists()
-	{	//TODO: SELECT * MIGHT BREAK
-	$query = 'SELECT *  FROM ' . $this->table . ' WHERE email = ? LIMIT 0,1';
-	$stmt = $this->conn->prepare($query);
-	$this->email = htmlspecialchars(strip_tags($this->email));
-	$stmt->bindParam(1, $this->email);
-	$stmt->execute();
-			if ($stmt->rowCount() > 0)
-			{
-			$row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-			$this->id = $row['id'];
-			$this->password = $row['password'];
-			$this->role = $row['role'];
-				return (true);
-			}
-			else
-			{
-				return (false);
-			}
+	{
+			//TODO: SELECT * MIGHT BREAK
+		$query = 'SELECT id, email, role, password  FROM ' . $this->table . ' WHERE email = ? LIMIT 0,1';
+		$stmt = $this->conn->prepare($query);
+		$this->email = htmlspecialchars(strip_tags($this->email));
+		$stmt->bindParam(1, $this->email);
+		$stmt->execute();
+				if ($stmt->rowCount() > 0)
+				{
+				$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	
+				$this->id = $row['id'];
+				$this->password = $row['password'];
+				$this->role = $row['role'];
+					return (true);
+				}
+				else
+				{
+					return (false);
+				}
 	}
 	// 1)
 	public function read()
@@ -104,7 +102,7 @@ class User
 		$query = 'SELECT id, email, role, created_at
 				  FROM ' . $this->table . ' WHERE id = ? LIMIT 0,1 ';
 		$stmt = $this->conn->prepare($query);
-		$stmt->bindParam(1, $this->id); //TODO: check api logic
+		$stmt->bindParam(1, $this->id);
 		$stmt->execute();
 
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -160,6 +158,65 @@ class User
 		{
 			printf("Error: %s.\n", $stmt->error);
 			return (false);
+		}
+	}
+
+	/*Work around to keep the logic works when user restart a sessions*/
+	public function findEntityId($user_id, $role)
+	{
+		$table = '';
+		$id_found = null;
+
+		// Determine Table based on Role
+		switch ($role)
+		{
+			case 'customer':
+				$table = 'customer';
+				break;
+			case 'food_place':
+				$table = 'food_place';
+				break;
+			case 'rider':
+				$table = 'delivery_drivers';
+				break;
+			default:
+				return [
+					'status' => 'error',
+					'message' => "Unknown role: $role"
+				];
+		}
+
+		// Query the Database
+		try {
+			$query = "SELECT id FROM $table WHERE user_id = :uid LIMIT 1";
+			$stmt = $this->conn->prepare($query);
+			$stmt->bindParam(':uid', $user_id);
+			$stmt->execute();
+
+			if ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+			{
+				$id_found = $row['id'];
+				return [
+					'status' => 'success',
+					'user_id' => $user_id,
+					'role' => $role,
+					'entity_id' => $id_found
+				];
+			}
+			else
+			{
+				return [
+					'status' => 'pending_setup',
+					'message' => "Profile not found for this user"
+				];
+			}
+		}
+		catch (Exception $e)
+		{
+			return [
+				'status' => 'error',
+				'message' => "Database error: " . $e->getMessage()
+			];
 		}
 	}
 }

@@ -239,3 +239,89 @@ function goToLogin(event)
 		   return cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
 	   }
    };
+
+
+
+   /* -------------------------------------------------------------------------- */
+/* SHARED: VIEW SINGLE ORDER MODAL                                            */
+/* Used by: Customer, Driver, Restaurant                                      */
+/* -------------------------------------------------------------------------- */
+async function viewSharedOrder(orderId) {
+    // 1. Ensure Modal HTML exists in the DOM
+    if (!document.getElementById('sharedOrderModal')) {
+        document.body.insertAdjacentHTML('beforeend', `
+            <div class="modal fade" id="sharedOrderModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header border-0 pb-0">
+                            <h5 class="modal-title fw-bold">Order Details #${orderId}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body" id="sharedOrderContent">
+                            <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+    } else {
+        // Update title if modal already exists
+        document.querySelector('#sharedOrderModal .modal-title').innerText = `Order Details #${orderId}`;
+        document.getElementById('sharedOrderContent').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+    }
+
+    // 2. Show Modal
+    const modalEl = document.getElementById('sharedOrderModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+
+    // 3. Fetch Data
+    try {
+        const res = await fetch(`https://localhost/A_project_forUniversity/src/api/food_order/read_single.php?id=${orderId}`);
+        
+        if (!res.ok)
+			throw new Error("Order not found");
+        
+        const order = await res.json();
+        
+        // 4. Render Content
+        // We handle missing fields gracefully using (||)
+        const itemsHtml = order.items && order.items.length > 0 
+            ? order.items.map(i => `
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <span><b>${i.quantity}x</b> ${i.item_name}</span>
+                    <span class="text-muted">€${i.price_at_order || '?'}</span>
+                </li>`).join('') 
+            : '<li class="list-group-item text-muted">No items found</li>';
+			document.getElementById('sharedOrderContent').innerHTML = `
+            <div class="text-center mb-4">
+                <h4 class="fw-bold">${order.restaurant_name}</h4>
+                <div class="text-muted small mb-2">
+                    <i class="fas fa-arrow-down"></i> Delivering to
+                </div>
+                <h5 class="fw-bold">${order.customer_name}</h5>
+                <p class="text-muted small"><i class="fas fa-map-marker-alt text-danger"></i> ${order.delivery_address}</p>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded mb-3">
+                <span class="badge bg-white text-dark border">${order.status_name}</span>
+                <span class="h4 text-success fw-bold mb-0">€${order.total}</span>
+            </div>
+
+            <h6 class="text-muted small text-uppercase fw-bold border-bottom pb-2 mb-2">Order Items</h6>
+            <ul class="list-group list-group-flush mb-3">
+                ${itemsHtml}
+            </ul>
+        `;
+		
+
+    } catch (e) {
+        document.getElementById('sharedOrderContent').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i> Could not load order details.
+            </div>`;
+    }
+}

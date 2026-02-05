@@ -22,18 +22,27 @@ $order = new FoodOrder($db);
 $order->id = isset($_GET['id']) ? $_GET['id'] : die();
 
 if($order->read_single()) {
+    
     $order_arr = array(
         'id' => $order->id,
         'status_id' => $order->order_status_id,
+        'status_name' => $order->status_name, // Added this useful label
         'total' => $order->total_amount,
+        'delivery_fee' => $order->delivery_fee,
         'ordered_at' => $order->order_datetime,
         'driver_id' => $order->assigned_driver_id,
-        // The Private Helper did the work here:
+        
+        // NEW USEFUL DATA
+        'restaurant_name' => $order->restaurant_name,
+        'customer_name' => $order->customer_name,
+        'delivery_address' => $order->delivery_address,
+
         'items' => $order->items_list 
     );
+    
     echo json_encode($order_arr);
 } else {
     http_response_code(404);
-    echo json_encode("Order not found.");
+    echo json_encode(["message" => "Order not found."]);
 }
 ?>
