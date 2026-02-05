@@ -96,7 +96,12 @@ class FoodPlace
         }
 		catch (Exception $e)
 		{
-            $this->conn->rollBack();
+			//TODO: this is a quick fix, let's double check for failure in address creaton
+			if ($this->conn->inTransaction())
+			{
+                $this->conn->rollBack();
+            }
+			error_log("FoodPlace Creation Failed: " . $e->getMessage());
             return false;
         }
     }

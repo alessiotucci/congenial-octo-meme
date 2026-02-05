@@ -19,6 +19,7 @@ async function handleStep1Submit(event)
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const role = document.getElementById('role').value;
+	console.log(role);
 
     const submitBtn = event.target.querySelector('button[type="submit"]');
     submitBtn.disabled = true;

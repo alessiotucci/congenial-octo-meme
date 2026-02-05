@@ -73,7 +73,7 @@ down:
 	@echo "$(RED)Stopping Containers...$(NC)"
 	docker-compose down
 
-restart: down up
+re: down up
 
 logs:
 	docker-compose logs -f app

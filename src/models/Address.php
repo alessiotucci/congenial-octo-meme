@@ -40,15 +40,24 @@ class Address
 		$this->conn = $db;
 	}
 
-	// ------------------------------------------------------------------
-    // 1. CREATE (Transactional: Address + Link)
+// ------------------------------------------------------------------
+    // 1. CREATE (Transactional: Address + Optional Customer Link)
     // ------------------------------------------------------------------
     public function create()
     {
+        // 1. Log the inputs to see what we received
+        error_log("[DEBUG] Address::create called");
+        error_log("[DEBUG] Data: Unit=" . $this->unit_number . ", Street=" . $this->street_number . ", City=" . $this->city);
+        error_log("[DEBUG] CustomerID is: " . ($this->customer_id ?? 'NULL'));
+
+        // Check if we are already inside a transaction (e.g., called by FoodPlace)
+        $isNestedTransaction = $this->conn->inTransaction();
+
         try {
-            // A. START TRANSACTION
-            // We turn off auto-commit. Everything below must succeed, or we roll back.
-            $this->conn->beginTransaction();
+            // A. START TRANSACTION (Only if not already in one)
+            if (!$isNestedTransaction) {
+                $this->conn->beginTransaction();
+            }
 
             // B. INSERT INTO ADDRESS TABLE
             $query = 'INSERT INTO ' . $this->table . ' 
@@ -61,11 +70,14 @@ class Address
             $stmt = $this->conn->prepare($query);
 
             // Sanitize
-            $this->unit_number = htmlspecialchars(strip_tags($this->unit_number));
+            
+			//$this->unit_number = htmlspecialchars(strip_tags($this->unit_number));
             $this->street_number = htmlspecialchars(strip_tags($this->street_number));
             $this->address_line1 = htmlspecialchars(strip_tags($this->address_line1));
-            $this->address_line2 = htmlspecialchars(strip_tags($this->address_line2));
-            $this->city = htmlspecialchars(strip_tags($this->city));
+            
+			//$this->address_line2 = htmlspecialchars(strip_tags($this->address_line2));
+            
+			$this->city = htmlspecialchars(strip_tags($this->city));
             $this->region = htmlspecialchars(strip_tags($this->region));
             $this->postal_code = htmlspecialchars(strip_tags($this->postal_code));
             $this->country_id = htmlspecialchars(strip_tags($this->country_id));
@@ -81,37 +93,53 @@ class Address
             $stmt->bindParam(':country_id', $this->country_id);
 
             if (!$stmt->execute()) {
-                throw new Exception("Failed to insert into Address table: " . implode(" ", $stmt->errorInfo()));
+                // Log specific SQL errors
+                $errorInfo = $stmt->errorInfo();
+                error_log("[ERROR] Address INSERT failed: " . $errorInfo[2]);
+                throw new Exception("Failed to insert into Address table: " . $errorInfo[2]);
             }
 
             // GET THE NEW ID
             $this->id = $this->conn->lastInsertId();
-
+            error_log("[DEBUG] Address created successfully with ID: " . $this->id);
 
             // C. INSERT INTO CROSS REFERENCE TABLE (customer_address)
-            // //TODO: USE THE CROSS REFERENCE TABLE INSTEAD
-            $linkQuery = 'INSERT INTO customer_address (customer_id, address_id) VALUES (:cust_id, :addr_id)';
-            $linkStmt = $this->conn->prepare($linkQuery);
+            // CRITICAL FIX: Only try to link if we actually have a customer_id!
+            // FoodPlace creation does NOT have a customer_id, so this was failing before.
+            if (!empty($this->customer_id)) {
+                error_log("[DEBUG] Linking Address " . $this->id . " to Customer " . $this->customer_id);
+                
+                $linkQuery = 'INSERT INTO customer_address (customer_id, address_id) VALUES (:cust_id, :addr_id)';
+                $linkStmt = $this->conn->prepare($linkQuery);
 
-            $this->customer_id = htmlspecialchars(strip_tags($this->customer_id));
-            
-            $linkStmt->bindParam(':cust_id', $this->customer_id);
-            $linkStmt->bindParam(':addr_id', $this->id);
+                $this->customer_id = htmlspecialchars(strip_tags($this->customer_id));
+                
+                $linkStmt->bindParam(':cust_id', $this->customer_id);
+                $linkStmt->bindParam(':addr_id', $this->id);
 
-            if (!$linkStmt->execute()) {
-                throw new Exception("Failed to link address to customer.");
+                if (!$linkStmt->execute()) {
+                    $linkError = $linkStmt->errorInfo();
+                    error_log("[ERROR] Customer-Address Link failed: " . $linkError[2]);
+                    throw new Exception("Failed to link address to customer.");
+                }
+            } else {
+                error_log("[DEBUG] Skipping customer link (customer_id is empty)");
             }
 
-            // D. COMMIT TRANSACTION
-            // If we got here, both inserts worked. Save changes.
-            $this->conn->commit();
+            // D. COMMIT TRANSACTION (Only if we started it)
+            if (!$isNestedTransaction) {
+                $this->conn->commit();
+            }
             return $this->id;
 
         } catch (Exception $e) {
-            // E. ROLLBACK ON FAILURE
-            // If anything failed, undo the first insert too. No orphans allowed.
-            $this->conn->rollBack();
-            // printf("Error: %s.\n", $e->getMessage()); // Uncomment for debugging
+            // E. ROLLBACK ON FAILURE (Only if we started it)
+            // If we are nested, we do NOT rollback here. We let the parent (FoodPlace) decide.
+            if (!$isNestedTransaction && $this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            
+            error_log("[ERROR] Address Transaction Failed: " . $e->getMessage());
             return false;
         }
     }
